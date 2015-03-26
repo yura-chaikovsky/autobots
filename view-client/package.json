@@ -1,0 +1,11 @@
+{
+  "name": "Autobots",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yura-chaikovsky/autobots/"
+  },
+  "author": "Telenor Client Side Team"
+}
