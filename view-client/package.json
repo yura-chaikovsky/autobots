@@ -7,5 +7,9 @@
     "type": "git",
     "url": "https://github.com/yura-chaikovsky/autobots/"
   },
-  "author": "Telenor Client Side Team"
+  "author": "Telenor Client Side Team",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-react": "^3.0.1"
+  }
 }
