@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Battle field example</title>
+
+	<style>
+
+		body {
+			background-color: #aaa;
+		}
+
+		.battle-field {
+			border: 1px solid rgba(0, 0, 0, 0.8);
+			width: 800px;
+			height: 800px;
+			margin: 50px auto 0;
+			opacity: 0;
+			transform: translate(400px, -300px) scale(0.5, 0.1);
+			transition: all .5s ease;
+		}
+
+		.battle-field.is-open {
+			opacity: 1;
+			transform: translate(0, 0) scale(1, 1);
+		}
+
+		.battle-field__cell {
+			margin: 0;
+			float: left;
+			box-sizing: border-box;
+			border-color: rgba(0, 0, 0, 0.8);
+			border-style: solid;
+			border-width: 0 1px 1px 0;
+			width: 80px;
+			height: 80px;
+			box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 1);
+		}
+
+		.battle-field__cell:last-of-type {
+			border-right-width: 0;
+		}
+
+		.battle-field__row:last-of-type .battle-field__cell {
+			border-bottom-width: 0;
+		}
+
+		.battle-field.is-shaked .battle-field__cell {
+			-webkit-animation: shake 1s 1;
+		}
+
+		@-webkit-keyframes shake {
+			30% {
+				background-color: #a63829;
+				border-radius: 10px;
+				transform: rotate(10deg);
+			}
+
+			50% {
+				transform: rotate(-10deg);
+			}
+
+			65% {
+				transform: rotate(10deg);
+			}
+
+			80% {
+				transform: rotate(-10deg);
+			}
+
+			100% {
+				background-color: inherit;
+				border-radius: 0;
+				transform: rotate(0);
+			}
+		}
+
+	</style>
+	<script>
+		function setClass() {
+			document.getElementsByClassName('battle-field')[0].className += ' is-open';
+			setTimeout(function () {
+				document.getElementsByClassName('battle-field')[0].className += ' is-shaked';
+			}, 3000);
+		}
+	</script>
+</head>
+<body onload="setClass()">
+	<div class="battle-field">
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+	</div>
+
+</body>
+</html>
