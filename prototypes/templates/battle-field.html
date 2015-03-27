@@ -27,6 +27,7 @@
 		.battle-field__cell {
 			margin: 0;
 			float: left;
+			position: relative;
 			box-sizing: border-box;
 			border-color: rgba(0, 0, 0, 0.8);
 			border-style: solid;
@@ -46,6 +47,44 @@
 
 		.battle-field.is-shaked .battle-field__cell {
 			-webkit-animation: shake 1s 1;
+		}
+
+
+		.tank {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+
+			width: 50px;
+			height: 30px;
+			border-top-left-radius: 20px;
+			border-top-right-radius: 20px;
+			border: 1px solid #bf7d00;
+
+			background-image: -webkit-linear-gradient(top, #ffe009 0%, #ffcd08 80%, #ffb002 100%);
+		}
+
+		.tank.to-right:after {
+			display: block;
+			position: absolute;
+			top: 30%;
+			left: 90%;
+			width: 15px;
+			height: 5px;
+			content: '';
+			background-color: #ffe009;
+		}
+
+		.tank.to-left:after {
+			display: block;
+			position: absolute;
+			top: 30%;
+			right: 90%;
+			width: 15px;
+			height: 5px;
+			content: '';
+			background-color: #ffe009;
 		}
 
 		@-webkit-keyframes shake {
@@ -103,19 +142,12 @@
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-		</div>
-		<div class="battle-field__row">
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
-			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell">
+
+				<div class="tank to-right"></div>
+
+
+			</div>
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
@@ -167,6 +199,20 @@
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+		</div>
+		<div class="battle-field__row">
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell"></div>
+			<div class="battle-field__cell">
+				<div class="tank to-left"></div>
+			</div>
 			<div class="battle-field__cell"></div>
 			<div class="battle-field__cell"></div>
 		</div>
