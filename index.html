@@ -6,12 +6,84 @@
     <title>Telenor Game</title>
     <meta name="description" content="Telenor Game">
     <link rel="stylesheet" href="styles/style.css"/>
+    <style type="text/css">
+      
+      .wrapper {
+        width: 980px;
+        margin: 0 auto;
+      }
+      .container {
+        padding: 20px 0;
+      }
+      h1 {
+        font-family: arial, sans-serif;
+        font-size: 24px; 
+        text-align: center;
+      }
+      .playzone {
+        border : 2px solid #ccc;
+        width: 650px;
+        height: 450px;
+        padding: 5px;
+        float: left;
+        position: relative;
+      }
+      .playtable {
+        border : 2px solid #ccc;
+        border-left: none;
+        width: 300px;
+        height: 460px;
+        float: left;
+        background: #ccc;
+      }
+
+      #pl1{
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        border: 2px solid yellow;
+        background: gold;
+        visibility: hidden;
+        transform: translate(-30%, -30%);
+        transition: 0.1s all linear;
+      }
+
+      #target{
+        width: 17px;
+        height: 17px;
+        background: red;
+        position: absolute;
+        border-radius: 50%; 
+            -webkit-animation-duration: 0.2s;
+            -webkit-animation-name: changeShadow;
+            -webkit-animation-iteration-count: infinite;
+      }
+
+      @-webkit-keyframes changeShadow{
+        from {
+          box-shadow: 0px 0px 10px #F00;
+        }
+
+        to {
+          box-shadow: 0px 0px 30px #F00;
+        }
+      }
+
+      </style>
   </head>
   <body>
-    <h1>Telenor Game</h1>
-    <div>
-      
-
+    <div class="wrapper">
+      <h1>Telenor Game</h1>
+      <div class="container">
+        <div class="playzone">
+          <div id="pl1"></div>
+          <div id="target"></div>
+        </div>
+        <div class="playtable">
+        </div>  
+      </div>
     </div>
+    <script type="text/javascript" src="http://zeptojs.com/zepto.min.js"></script>
+    <script type="text/javascript" src="prototypes/engine/gameserver.js"></script>
   </body>
 </html>

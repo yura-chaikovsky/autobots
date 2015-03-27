@@ -2,8 +2,8 @@ var TACT = 100;
 
 var battlefield = {
 	"field" : {
-		"width": 1600,
-		"height": 600,
+		"width": 650,
+		"height": 450,
 	},
 	"players" : []
 };
