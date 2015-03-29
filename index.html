@@ -124,13 +124,40 @@
 
     #first--container {
       -webkit-animation: title_fadein 7s 1 ease !important;
+      display: none;
     }
 
     @-webkit-keyframes title_fadein {0% {opacity:0;} 30% {opacity:0;} 100% {opacity:1;}}
 
     #second--container {
-      display: none;
+      //display: none;
+      margin: 100px auto;
+      width: 900px;
+      font-size: 90px; 
+      //text-align: center;
     }
+    .menu {
+      list-style: none;
+      text-shadow: 0px 0px 32px rgba(255,245,0,0.6);
+      font-weight:bold;
+      -webkit-filter:blur(1px) drop-shadow(0px 0px 12px rgba(255,255,255,0.7));  
+    }
+    .menu li {
+      margin-bottom: 10px;
+    }
+    .menu li a {
+      text-decoration: none;
+      line-height:2px;
+        transition: all 2s ease-in-out;
+    }
+    .menu li a:hover {
+      -webkit-transform: translate(70px, 0px); 
+      
+    }
+    .menu li.active {
+     // transform:translate(70px, 0px); 
+    }
+
     </style>
 
     <div id="first--container">
@@ -142,8 +169,8 @@
     </div>
 
     <div id="second--container">
-      <ul>
-        <li><a href="#">One Player</a></li>
+      <ul class="menu">
+        <li class="active"><a href="#">One Player</a></li>
         <li><a href="#">Multi Players</a></li>
         <li><a href="#">Settings</a></li>
         <li><a href="#">About us</a></li>
