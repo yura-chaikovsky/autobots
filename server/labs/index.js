@@ -49,6 +49,7 @@ module.exports = {
         if (labyrinth[obj.rowNum][index] === EMPTY ||
           labyrinth[obj.rowNum][index - 1] === EMPTY ||
           labyrinth[obj.rowNum][index + 1] === EMPTY) {
+
           --i;
 
           continue;
@@ -79,6 +80,7 @@ module.exports = {
         if (currentRow[position] === FILL ||
           previousRow[position] === EMPTY ||
           nextRow[position] === EMPTY) {
+
           --i;
 
           continue;
@@ -95,9 +97,11 @@ module.exports = {
 
           while (currentRow[position +
             coefficientOfDirrection * (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY) {
+
             hasEmptyCellOnTheNextRow = hasEmptyCellOnTheNextRow ||
               (nextRow[position + coefficientOfDirrection *
               (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY);
+
             hasEmptyCellOnThePreviousRow = hasEmptyCellOnThePreviousRow ||
               (previousRow[position + coefficientOfDirrection *
               (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY);
@@ -140,8 +144,8 @@ module.exports = {
   }
 };
 
-console.log(module.exports.generateLabyrinth(19, 19).map(function(a) {
+/*console.log(module.exports.generateLabyrinth(19, 19).map(function(a) {
   return a.map(function(el) {
     return el === EMPTY ? ' ' : '#';
   }).join('');
-}));
+}));*/
