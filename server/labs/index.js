@@ -21,22 +21,22 @@ module.exports = {
     }
 
     for (var y = 1; y < height - 1; ++y) {
-      labyrinth[y] = new Array(width);
-
       content = y % 2;
 
-      if (content === 1) {
-        filledRows.push({
-          rowNum: y
-        });
-      } else {
+      if (content === 0) {
         emptyRows.push({
           rowNum: y
         });
-      };
+
+        continue;
+      }
+
+      filledRows.push({
+        rowNum: y
+      });
 
       for (var x = 0; x < width; ++x) {
-        labyrinth[y][x] = content === 0 ? EMPTY : FILL;
+        labyrinth[y][x] = FILL;
       }
     }
 
