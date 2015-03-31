@@ -1,114 +1,147 @@
 var EMPTY = 0,
   FILL = 1;
 
+function makePizdatyiRandom(maximumValue) {
+  return Math.floor(Math.random() * maximumValue);
+}
+
 module.exports = {
-  getLab: function(n, m) {
-    var arr = new Array(n),
-    filledLines = [],
-    emptyLines = [];
+  generateLabyrinth: function(height, width) {
+    var labyrinth = new Array(height),
+      filledRows = [],
+      emptyRows = [],
+      content;
 
-    arr[0] = new Array(m);
-    arr[n - 1] = new Array(m);
+    for (var y = 0; y < height; ++y) {
+      labyrinth[y] = new Array(width);
 
-    for (var i = 0; i < m; ++i) {
-      arr[0][i] = EMPTY;
-      arr[n - 1][i] = EMPTY;
+      for (var x = 0; x < width; ++x) {
+        labyrinth[y][x] = EMPTY;
+      }
     }
 
-    for (var i = 1; i < n - 1; ++i) {
-      arr[i] = new Array(m);
+    for (var y = 1; y < height - 1; ++y) {
+      labyrinth[y] = new Array(width);
 
-      cont = i % 2;
+      content = y % 2;
 
-      if (cont === 1) {
-        filledLines.push({
-          rowNum: i
+      if (content === 1) {
+        filledRows.push({
+          rowNum: y
         });
       } else {
-        emptyLines.push({
-          rowNum: i
+        emptyRows.push({
+          rowNum: y
         });
       };
 
-      for (var j = 0; j < m; ++j) {
-        arr[i][j] = cont === 0 ? EMPTY : FILL;
+      for (var x = 0; x < width; ++x) {
+        labyrinth[y][x] = content === 0 ? EMPTY : FILL;
       }
     }
 
-    filledLines.forEach(function(obj) {
-      var l = (Math.random() * (m * .3) << 0) + 1;
+    filledRows.forEach(function(obj) {
+      var count = makePizdatyiRandom(width * .3) + 1;
 
-      for (var i = 0; i < l; ++i) {
-        var ind = (Math.random() * m) >> 0;
+      for (var i = 0; i < count; ++i) {
+        var index = makePizdatyiRandom(width);
 
-        if (arr[obj.rowNum][ind] === EMPTY || arr[obj.rowNum][ind - 1] === EMPTY || arr[obj.rowNum][ind + 1] === EMPTY) {
+        if (labyrinth[obj.rowNum][index] === EMPTY ||
+          labyrinth[obj.rowNum][index - 1] === EMPTY ||
+          labyrinth[obj.rowNum][index + 1] === EMPTY) {
           --i;
 
           continue;
         }
 
-        arr[obj.rowNum][ind] = EMPTY;
+        labyrinth[obj.rowNum][index] = EMPTY;
       }
     });
 
-    emptyLines.forEach(function(obj) {
-      var l = (Math.random() * (m * .3) << 0);
+    emptyRows.forEach(function(obj) {
+      var count = makePizdatyiRandom(width * .3),
+        position,
+        currentRow,
+        nextRow,
+        previousRow,
+        hasEmptyCellOnTheNextRow,
+        hasEmptyCellOnThePreviousRow,
+        lengthOfEmptyCellsInCurrentLine,
+        newEmptyCellPosition,
+        rowAfterRow;
 
-      for (var i = 0; i < l; ++i) {
-        var pos = (Math.random() * m) >> 0,
-        cur = arr[obj.rowNum];
-        prev = arr[obj.rowNum - 1],
-        next = arr[obj.rowNum + 1];
+      for (var i = 0; i < count; ++i) {
+        position = makePizdatyiRandom(width),
+        currentRow = labyrinth[obj.rowNum];
+        previousRow = labyrinth[obj.rowNum - 1],
+        nextRow = labyrinth[obj.rowNum + 1];
 
-        if (cur[pos] === FILL || prev[pos] === EMPTY || next[pos] === EMPTY) {
+        if (currentRow[position] === FILL ||
+          previousRow[position] === EMPTY ||
+          nextRow[position] === EMPTY) {
           --i;
 
           continue;
         }
 
-        cur[pos] = FILL;
+        currentRow[position] = FILL;
 
-        for (var k = -1; k < 3; k += 2) {
-          var hasNext = false,
-          hasPrev = false,
-          length = 0;
+        for (var coefficientOfDirrection = -1; coefficientOfDirrection < 3; 
+          coefficientOfDirrection += 2) {
 
-          while (cur[pos + k * (length + 1)] === EMPTY) {
-            hasNext = hasNext || (next[pos + k * (length + 1)] === EMPTY);
-            hasPrev = hasPrev || (prev[pos + k * (length + 1)] === EMPTY);
+          hasEmptyCellOnTheNextRow = false;
+          hasEmptyCellOnThePreviousRow = false;
+          lengthOfEmptyCellsInCurrentLine = 0;
 
-            ++length;
+          while (currentRow[position +
+            coefficientOfDirrection * (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY) {
+            hasEmptyCellOnTheNextRow = hasEmptyCellOnTheNextRow ||
+              (nextRow[position + coefficientOfDirrection *
+              (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY);
+            hasEmptyCellOnThePreviousRow = hasEmptyCellOnThePreviousRow ||
+              (previousRow[position + coefficientOfDirrection *
+              (lengthOfEmptyCellsInCurrentLine + 1)] === EMPTY);
+
+            ++lengthOfEmptyCellsInCurrentLine;
           }
 
-          if (length === 0 || (hasNext && hasPrev)) {
+          if (lengthOfEmptyCellsInCurrentLine === 0 ||
+            (hasEmptyCellOnTheNextRow && hasEmptyCellOnThePreviousRow)) {
+
             continue;
           }
 
-          var emptyCell;
+          if (!hasEmptyCellOnTheNextRow) {
+            newEmptyCellPosition = position + 
+              coefficientOfDirrection * makePizdatyiRandom(lengthOfEmptyCellsInCurrentLine);
 
-          if (!hasNext) {
-            emptyCell = pos + (k * Math.random() * length >> 0);
+            nextRow[newEmptyCellPosition + coefficientOfDirrection] = EMPTY;
 
-            next[emptyCell + k] = EMPTY;
+            rowAfterRow = labyrinth[obj.rowNum + 2];
 
-            var wall = arr[obj.rowNum + 2];
-
-            wall[emptyCell + k] = EMPTY;
+            rowAfterRow[newEmptyCellPosition + coefficientOfDirrection] = EMPTY;
           }
 
-          if (!hasPrev) {
-            emptyCell = pos + (k * Math.random() * length >> 0);
+          if (!hasEmptyCellOnThePreviousRow) {
+            newEmptyCellPosition = position + 
+              coefficientOfDirrection * makePizdatyiRandom(lengthOfEmptyCellsInCurrentLine);
 
-            prev[emptyCell + k] = EMPTY;
+            previousRow[newEmptyCellPosition + coefficientOfDirrection] = EMPTY;
 
-            var wall = arr[obj.rowNum - 2];
+            rowAfterRow = labyrinth[obj.rowNum - 2];
 
-            wall[emptyCell + k] = EMPTY;
+            rowAfterRow[newEmptyCellPosition + coefficientOfDirrection] = EMPTY;
           }
         }
       }
     });
 
-    return arr;
+    return labyrinth;
   }
 };
+
+console.log(module.exports.generateLabyrinth(19, 19).map(function(a) {
+  return a.map(function(el) {
+    return el === EMPTY ? ' ' : '#';
+  }).join('');
+}));
