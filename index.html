@@ -6,6 +6,16 @@
     <title>Telenor Game</title>
     <meta name="description" content="Telenor Game">
     <link rel="stylesheet" href="styles/style.css"/>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      socket.on('next-turn', function(data) {
+        console.log('Turn ' + data.turn);
+      });
+    </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   </head>
   <body>
     <style type="text/css">
@@ -170,13 +180,20 @@
 
     <div id="second--container">
       <ul class="menu">
-        <li class="active"><a href="#">One Player</a></li>
-        <li><a href="#">Multi Players</a></li>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">About us</a></li>
+        <li class="active"><a href="#single-player-game">Single Player</a></li>
+        <li><a href="#multi-player-game">Multi Players</a></li>
+        <li><a href="#settings">Settings</a></li>
+        <li><a href="#about-us">About us</a></li>
       </ul>  
     </div>
 
+    <script>
+      $('.menu').on('click', 'li>a', function() {
+        var selectedOption = $(this).attr('href');
 
+        console.log('You have selected ' + selectedOption);
+        socket.emit('menu-action', selectedOption);
+      });
+    </script>
   </body>
 </html>
