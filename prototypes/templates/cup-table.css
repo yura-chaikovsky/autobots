@@ -1,0 +1,37 @@
+.container {
+    border: solid 2px darkblue;
+    padding: 5px;
+}
+
+.row {
+    text-align: center;
+}
+
+.match {
+    text-align: center;
+}
+
+.half {
+    display: inline-block;
+    width: 49%;
+}
+
+.player {
+    border: solid 1px black;
+    width: 90%;
+    max-width: 150px;
+    display: inline-block;
+}
+
+.line {
+    width: 1px;
+    border: solid 1px black;
+    display: inline-block;
+}
+
+.brace {
+    width: 50%;
+    border: solid 1px black;
+    border-bottom: 0;
+    display: inline-block;
+}
