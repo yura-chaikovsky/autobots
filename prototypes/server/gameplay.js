@@ -1,4 +1,5 @@
 function Gameplay(options) {
+  var io = options.io;
   var players = [];
   var map = options.map;
   var middle = Math.floor(map[0].length / 2);
@@ -7,57 +8,71 @@ function Gameplay(options) {
     { x: middle , y: map.length - 1 }
   ];
 
+  var currentTurn = 0;
+
   if (!map) {
     throw new Error('Map is required!')
   }
 
   this.start = function() {
-    console.log('');
-    console.log('');
-    console.log('Welcome to Autobots!');
+    var _this = this;
 
-    this.placePlayers();
-    this.printList();
-    this.drawMap();
+    _this.placePlayers();
+
+    setInterval(function() {
+      currentTurn++;
+
+      console.log('Current turn: ' + currentTurn);
+
+      _this.update();
+      _this.broadcastState();
+    }, options.tick);
+  };
+
+  this.update = function() {
+    players.forEach(function(player) {
+      var action = player.getCurrentAction();
+
+      console.log(player.name, ' = ', action);
+
+      var x = player.position.x,
+          y = player.position.y;
+
+      if ('up' === action) {
+        --y;
+      } else if ('down' === action) {
+        ++y
+      } else if ('left' === action) {
+        --x
+      } else if ('right' === action) {
+        ++x;
+      }
+
+      if (map[y] && map[y][x] && ('empty' === map[y][x].name)) {
+        player.position.x = x;
+        player.position.y = y;
+      }
+    });
+  };
+
+  this.broadcastState = function() {
+    io.emit('state-update', {
+      turn: currentTurn,
+      map: map,
+      players: players
+    });
   };
 
   this.addPlayer = function(autobot) {
     players.push(autobot);
-
-    autobot.label = players.length - 1;
-  };
-
-  this.printList = function() {
-    for (var i = 0; i < players.length; i++) {
-      console.log(players[i].label + ' - ' + players[i].name);
-    }
-
-    console.log('------------');
   };
 
   this.placePlayers = function() {
     for (var i = 0; i < players.length; i++) {
-      var place = places[i];
-
-      map[place.y][place.x] = players[i];
+      players[i].position.x = places[i].x;
+      players[i].position.y = places[i].y;
     }
   };
-
-  this.drawMap = function() {
-    for (var y = 0; y < map.length; y++) {
-      var row = map[y];
-      var rowView = '|';
-
-      for (var x = 0; x < row.length; x++) {
-        rowView += row[x].label;
-      }
-
-      rowView += '|';
-      console.log(rowView);
-    }
-
-    console.log((new Array(row.length + 3)).join('-'));
-  }
 }
 
 module.exports = Gameplay;

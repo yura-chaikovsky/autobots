@@ -1,5 +1,5 @@
 var mapItems = [
-  { name: 'aisle', label: ' ' },
+  { name: 'empty', label: ' ' },
   { name: 'wall', label: 'X' }
 ];
 

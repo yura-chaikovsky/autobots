@@ -10,8 +10,11 @@
     <script>
       var socket = io();
 
-      socket.on('next-turn', function(data) {
-        console.log('Turn ' + data.turn);
+      socket.on('state-update', function(data) {
+        console.log('');
+        console.log('Turn: ' + data.turn);
+        console.log(data.players[0].name + ': ' + JSON.stringify(data.players[0].position));
+        console.log(data.players[1].name + ': ' + JSON.stringify(data.players[1].position));
       });
     </script>
 
