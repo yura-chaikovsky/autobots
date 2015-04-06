@@ -2,13 +2,8 @@ function Gameplay(options) {
   var io = options.io;
   var players = [];
   var map = options.map;
-  var middle = Math.floor(map[0].length / 2);
-  var places = [
-    { x: middle , y: 0 },
-    { x: middle , y: map.length - 1 }
-  ];
-
   var currentTurn = 0;
+  var gameLoop;
 
   if (!map) {
     throw new Error('Map is required!')
@@ -19,7 +14,8 @@ function Gameplay(options) {
 
     _this.placePlayers();
 
-    setInterval(function() {
+    // game loop
+    var gameLoop = setInterval(function() {
       currentTurn++;
 
       console.log('Current turn: ' + currentTurn);
@@ -48,7 +44,7 @@ function Gameplay(options) {
         ++x;
       }
 
-      if (map[y] && map[y][x] && ('empty' === map[y][x].name)) {
+      if (map.isEmpty(x, y)) {
         player.position.x = x;
         player.position.y = y;
       }
@@ -58,7 +54,7 @@ function Gameplay(options) {
   this.broadcastState = function() {
     io.emit('state-update', {
       turn: currentTurn,
-      map: map,
+      map: map.getState(),
       players: players
     });
   };
@@ -69,8 +65,7 @@ function Gameplay(options) {
 
   this.placePlayers = function() {
     for (var i = 0; i < players.length; i++) {
-      players[i].position.x = places[i].x;
-      players[i].position.y = places[i].y;
+      players[i].position = map.startPoritions[i];
     }
   };
 }

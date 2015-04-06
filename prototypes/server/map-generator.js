@@ -1,31 +1,28 @@
-var mapItems = [
-  { name: 'empty', label: ' ' },
-  { name: 'wall', label: 'X' }
-];
+var Map = require('./map');
 
 function MapGenerator() {}
 
 MapGenerator.prototype.generate = function(width, height) {
-  var map = [];
+  var field = [];
 
   for (var y = 0; y < height; y++) {
     var row = [];
 
-    map.push(row);
+    field.push(row);
 
     for (var x = 0; x < width; x++) {
       row.push( getRandomObject() );
     }
   }
 
-  return map;
+  return new Map(field);
 };
 
 function getRandomObject() {
   var n = Math.random() * 10;
   var position = (n > 8) ? 1 : 0;
 
-  return mapItems[position];
+  return Map.AVAILABLE_CONTENT[position];
 }
 
 module.exports = MapGenerator;

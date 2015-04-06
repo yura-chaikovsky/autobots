@@ -26,7 +26,7 @@ io.on('connection', function(socket){
   socket.on('menu-action', function(action) {
     console.log('User has selected: ' + action);
     
-    if ('#single-player-game' === action) {
+    if ('#start' === action) {
       app.run(io);
     }
   });

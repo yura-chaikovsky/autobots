@@ -3,16 +3,16 @@ var Gameplay = require('./gameplay');
 var Autobot = require('./autobot');
 var mapGenerator = new MapGenerator();
 
-var started = false;
 var actions = ['', 'up', 'down', 'right', 'left'];
+var game;
 
 module.exports = {
   run: function(io) {
-    if (started) {
+    if (game) {
       return;
     }
 
-    var game = new Gameplay({
+    game = new Gameplay({
       io: io,
       map: mapGenerator.generate(10, 10),
       tick: 2000
