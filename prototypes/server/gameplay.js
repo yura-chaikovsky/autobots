@@ -3,7 +3,6 @@ function Gameplay(options) {
   var players = [];
   var map = options.map;
   var currentTurn = 0;
-  var gameLoop;
 
   if (!map) {
     throw new Error('Map is required!')
@@ -14,8 +13,7 @@ function Gameplay(options) {
 
     _this.placePlayers();
 
-    // game loop
-    var gameLoop = setInterval(function() {
+    setInterval(function() {
       currentTurn++;
 
       console.log('Current turn: ' + currentTurn);

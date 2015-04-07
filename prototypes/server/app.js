@@ -15,13 +15,13 @@ module.exports = {
     game = new Gameplay({
       io: io,
       map: mapGenerator.generate(10, 10),
-      tick: 2000
+      tick: 500
     });
 
     var me = new Autobot('Me');
     var he = new Autobot('He');
 
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 1000; i++) {
       me.addAction(actions[Math.floor(Math.random() * 5)]);
       he.addAction(actions[Math.floor(Math.random() * 5)]);
     }

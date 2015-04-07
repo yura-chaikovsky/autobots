@@ -7,17 +7,6 @@
     <meta name="description" content="Telenor Game">
     <link rel="stylesheet" href="styles/style.css"/>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
-
-      socket.on('state-update', function(data) {
-        console.log('');
-        console.log('Turn: ' + data.turn);
-        console.log(data.players[0].name + ': ' + JSON.stringify(data.players[0].position));
-        console.log(data.players[1].name + ': ' + JSON.stringify(data.players[1].position));
-      });
-    </script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   </head>
   <body>
@@ -194,6 +183,164 @@
       </ul>
     </div>
 
+    <style>
+      .turn {
+        color: #fff;
+      }
+
+      #battlefield {
+        position: absolute;
+      }
+
+      #battlefield td {
+        width: 7vmin;
+        height: 7vmin;
+        border: 1px solid #fff;
+      }
+
+      .player {
+        position: absolute;
+        background-color: #0F0;
+        width: 6vmin;
+        height: 6vmin;
+        transition: all .5s;
+      }
+
+      .wall {
+        background-color: #fff;
+      }
+
+    </style>
+
+
+    <div id="battlefield-container">
+      <h2 class="turn">Current turn: <span id="turn-number">0</span></h2>
+      <table id="battlefield">
+        <tbody>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
     <script>
       $('.menu').on('click', 'li>a', function() {
         var selectedOption = $(this).attr('href');
@@ -201,6 +348,55 @@
         console.log('You have selected ' + selectedOption);
         socket.emit('menu-action', selectedOption);
       });
+    </script>
+
+    <script>
+      var socket = io();
+      var initialized = false;
+      var $container = $('#battlefield-container');
+      var battleField = $('#battlefield').get(0);
+      var $turnNumber = $('#turn-number');
+      var WALL = 1;
+      var players = [];
+
+      socket.on('state-update', function(data) {
+        if (!initialized) {
+          initializeGame(data);
+          initialized = true;
+        }
+
+        for (var i = 0; i < data.players.length; i++) {
+          movePlayer(players[i], data.players[i].position)
+        }
+
+        $turnNumber.text(data.turn);
+      });
+
+      function initializeGame(data) {
+        for (var y = 0; y < data.map.length; y++) {
+          for (var x = 0; x < data.map[y].length; x++) {
+            if (data.map[y][x] === WALL) {
+              battleField.rows[y].cells[x].classList.add('wall');
+            }
+          }
+        }
+
+        for (var i = 0; i < data.players.length; i++) {
+          var $player = $('<div class="player">' + i + '</div>');
+
+          players.push($player);
+          $container.append($player);
+        }
+      }
+
+      function movePlayer($player, position) {
+        var cellPosition = $(battleField.rows[position.y].cells[position.x]).offset();
+
+        $player.css({
+          top: cellPosition.top + 5 + 'px',
+          left: cellPosition.left + 5 + 'px'
+        })
+      }
     </script>
   </body>
 </html>
