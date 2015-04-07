@@ -15,7 +15,7 @@ module.exports = {
     game = new Gameplay({
       io: io,
       map: mapGenerator.generate(10, 10),
-      tick: 500
+      tick: 300
     });
 
     var me = new Autobot('Me');
