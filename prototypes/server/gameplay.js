@@ -3,6 +3,7 @@ function Gameplay(options) {
   var players = [];
   var map = options.map;
   var currentTurn = 0;
+  var started = false;
 
   if (!map) {
     throw new Error('Map is required!')
@@ -10,6 +11,8 @@ function Gameplay(options) {
 
   this.start = function() {
     var _this = this;
+
+    started = true;
 
     _this.placePlayers();
 
@@ -23,6 +26,10 @@ function Gameplay(options) {
     }, options.tick);
   };
 
+  this.isStarted = function() {
+    return started;
+  };
+
   this.update = function() {
     players.forEach(function(player) {
       var action = player.getCurrentAction();
@@ -32,14 +39,22 @@ function Gameplay(options) {
       var x = player.position.x,
           y = player.position.y;
 
-      if ('up' === action) {
-        --y;
-      } else if ('down' === action) {
-        ++y
-      } else if ('left' === action) {
-        --x
-      } else if ('right' === action) {
-        ++x;
+      switch (action) {
+        case 'up':
+          --y;
+          break;
+
+        case 'down':
+          ++y;
+          break;
+
+        case 'left':
+          --x;
+          break;
+
+        case 'right':
+          ++x;
+          break;
       }
 
       if (map.isEmpty(x, y)) {
@@ -59,6 +74,10 @@ function Gameplay(options) {
 
   this.addPlayer = function(autobot) {
     players.push(autobot);
+
+    console.log(players.map(function(player) {
+      return player.name;
+    }));
   };
 
   this.placePlayers = function() {
