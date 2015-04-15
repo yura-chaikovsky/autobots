@@ -1,7 +1,6 @@
-var MapGenerator = require('./map-generator');
+var mapGenerator = require('./map-generator');
 var Gameplay = require('./gameplay');
 var Autobot = require('./autobot');
-var mapGenerator = new MapGenerator();
 
 var actions = ['', 'up', 'down', 'right', 'left'];
 

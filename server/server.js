@@ -5,8 +5,8 @@ var PORT = 8000;
 
 var gameSettings = {
   tick: 300,
-  width: 10,
-  height: 10,
+  width: 11,
+  height: 11,
   io: require('socket.io')(server)
 };
 
