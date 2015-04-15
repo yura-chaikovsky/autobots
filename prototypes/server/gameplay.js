@@ -1,6 +1,6 @@
 function Gameplay(options) {
   var io = options.io;
-  var players = [];
+  var players = {};
   var map = options.map;
   var currentTurn = 0;
   var started = false;
@@ -31,7 +31,8 @@ function Gameplay(options) {
   };
 
   this.update = function() {
-    players.forEach(function(player) {
+    Object.keys(players).forEach(function(token) {
+      var player = players[token];
       var action = player.getCurrentAction();
 
       console.log(player.name, ' = ', action);
@@ -68,16 +69,28 @@ function Gameplay(options) {
     io.emit('state-update', {
       turn: currentTurn,
       map: map.getState(),
-      players: players
+      players: Object.keys(players).map(function(token) {
+        return players[token];
+      })
     });
   };
 
   this.addPlayer = function(autobot) {
-    players.push(autobot);
+    players[autobot.id] = autobot;
+  };
 
-    console.log(players.map(function(player) {
-      return player.name;
-    }));
+  this.addActions = function(token, actions) {
+    var player = players[token];
+
+    if (!player) {
+      console.log('Invalid Token ' + token);
+
+      return;
+    }
+
+    for (var i = 0; i < actions.length; i++) {
+      player.addActions(actions[i]);
+    }
   };
 
   this.placePlayers = function() {

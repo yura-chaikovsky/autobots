@@ -15,28 +15,43 @@ function App(options) {
   });
 
   io.on('connection', function(socket) {
-    var userId = Date.now();
-    var autobot = new Autobot(userId);
+    var id = Date.now();
+    var autobot;
 
-    for (var i = 0; i < 1e3; i++) {
-      autobot.addAction(actions[Math.floor(Math.random() * 5)]);
-    }
+    console.log('a user connected ' + id);
 
-    console.log('a user connected ' + userId);
     socket.on('disconnect', function() {
-      console.log('user disconnected ' + userId);
+      console.log('user disconnected ' + id);
     });
 
     socket.on('menu-action', function(action) {
       console.log('User has selected: ' + action);
 
-      if (!game.isStarted() && '#start' === action) {
+      if (!game.isStarted() && action === '#start') {
         game.start();
       }
+    });
 
-      if (!game.isStarted() && '#join-game' === action) {
-        game.addPlayer(autobot);
+    socket.on('join-game', function(data) {
+      if (game.isStarted()) {
+        console.log('The game has already started! Please wait the next one.');
+
+        return;
       }
+
+      console.log(data.name + ' joined the game!');
+      autobot = new Autobot(data.name);
+      game.addPlayer(autobot);
+    });
+
+    socket.on('send-commands', function(data) {
+      if (!game.isStarted()) {
+        console.log('The game has not started yet!');
+
+        return;
+      }
+
+      autobot.addAction(data.action)
     });
   });
 }

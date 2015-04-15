@@ -1,6 +1,6 @@
 function Autobot(name) {
-  this.name = name;
-  this.label = '@';
+  this.id = Date.now();
+  this.name = name || '#' + this.id;
 
   this._actions = [];
 

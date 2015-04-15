@@ -180,7 +180,6 @@
         <li><a href="#settings">Settings</a></li>
         <li><a href="#about-us">About us</a></li>
         <li><a href="#start">Start</a></li>
-        <li><a href="#join-game">Join</a></li>
       </ul>
     </div>
 
@@ -383,7 +382,7 @@
         }
 
         for (var i = 0; i < data.players.length; i++) {
-          var $player = $('<div class="player">' + i + '</div>');
+          var $player = $('<div class="player">' + data.players[i].name + '</div>');
 
           players.push($player);
           $container.append($player);
