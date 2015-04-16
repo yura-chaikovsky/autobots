@@ -1,36 +1,63 @@
-function Gameplay(options) {
+function Game(options) {
   var io = options.io;
   var players = {};
   var map = options.map;
+  var startPositions = map.getStartPositions();
   var currentTurn = 0;
   var started = false;
+  var timer;
 
   if (!map) {
     throw new Error('Map is required!')
   }
 
   this.start = function() {
-    var _this = this;
-
     started = true;
 
-    _this.placePlayers();
-
-    setInterval(function() {
+    timer = setInterval(function() {
       currentTurn++;
-
       console.log('Current turn: ' + currentTurn);
 
-      _this.update();
-      _this.broadcastState();
+      playTact();
+      broadcastState();
     }, options.tick);
+  };
+
+  this.stop = function() {
+    clearInterval(timer);
+    started = false;
   };
 
   this.isStarted = function() {
     return started;
   };
 
-  this.update = function() {
+  this.addPlayer = function(autobot) {
+    players[autobot.id] = autobot;
+    autobot.position = startPositions.shift();
+  };
+
+  this.removePlayer = function(autobot) {
+    if (players[autobot.id]) {
+      delete players[autobot.id];
+    }
+  };
+
+  this.addActions = function(token, actions) {
+    var player = players[token];
+
+    if (!player) {
+      console.log('Invalid Token ' + token);
+
+      return;
+    }
+
+    for (var i = 0; i < actions.length; i++) {
+      player.addActions(actions[i]);
+    }
+  };
+
+  function playTact() {
     Object.keys(players).forEach(function(token) {
       var player = players[token];
       var action = player.getCurrentAction();
@@ -63,9 +90,9 @@ function Gameplay(options) {
         player.position.y = y;
       }
     });
-  };
+  }
 
-  this.broadcastState = function() {
+  function broadcastState() {
     io.emit('state-update', {
       turn: currentTurn,
       map: map.getState(),
@@ -73,31 +100,7 @@ function Gameplay(options) {
         return players[token];
       })
     });
-  };
-
-  this.addPlayer = function(autobot) {
-    players[autobot.id] = autobot;
-  };
-
-  this.addActions = function(token, actions) {
-    var player = players[token];
-
-    if (!player) {
-      console.log('Invalid Token ' + token);
-
-      return;
-    }
-
-    for (var i = 0; i < actions.length; i++) {
-      player.addActions(actions[i]);
-    }
-  };
-
-  this.placePlayers = function() {
-    for (var i = 0; i < players.length; i++) {
-      players[i].position = map.startPoritions[i];
-    }
-  };
+  }
 }
 
-module.exports = Gameplay;
+module.exports = Game;

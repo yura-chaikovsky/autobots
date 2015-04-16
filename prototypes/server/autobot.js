@@ -10,6 +10,15 @@ function Autobot(name) {
   };
 }
 
+Autobot.ACTIONS = {
+  'up'   : {
+
+  },
+  'down' : {},
+  'right': {},
+  'left' : {}
+};
+
 Autobot.prototype.addAction = function(action) {
   this._actions.push(action);
 };

@@ -3,13 +3,6 @@ function Map(field) {
 
   this.height = field.length;
   this.width = field[0].length;
-
-  var middle = Math.floor(this.width / 2);
-
-  this.startPoritions = [
-    { x: middle , y: 0 },
-    { x: middle , y: this.height - 1 }
-  ];
 }
 
 Map.EMPTY = 0;
@@ -20,15 +13,18 @@ Map.AVAILABLE_CONTENT = [
   Map.WALL
 ];
 
-Map.prototype.isOnMap = function(x, y) {
-  return this._field[y] != undefined
-    && this._field[y][x] != undefined;
+Map.prototype.getStartPositions = function() {
+  var middle = Math.floor(this.width / 2);
+
+  return [
+    { x: middle , y: 0 },
+    { x: middle , y: this.height - 1 }
+  ];
 };
 
-Map.prototype.getMapObject = function(x, y) {
-  if (this.isOnMap(x, y)) {
-    return this._field[y][x];
-  }
+Map.prototype.isOnMap = function(x, y) {
+  return this._field[y] !== undefined
+    && this._field[y][x] !== undefined;
 };
 
 Map.prototype.isEmpty = function(x, y) {
