@@ -9,13 +9,13 @@ module.exports = {
       tick: options.tick
     });
 
-    options.io.on('connection', function(socket) {
+    options.io.on('connection', function(client) {
       var id = Date.now();
       var autobot;
 
       console.log('a user connected ' + id);
 
-      socket.on('menu-action', function(action) {
+      client.on('menu-action', function(action) {
         console.log('User has selected: ' + action);
 
         if (!game.isStarted() && action === '#start') {
@@ -27,16 +27,20 @@ module.exports = {
         }
       });
 
-      socket.on('join-game', function(data) {
+      client.on('join-game', function(data) {
         if (game.isStarted()) {
           return console.log('The game has already started! Please wait the next one.');
         }
 
         console.log(data.token + ' joined the game!');
         autobot = game.addPlayer(data.token);
+
+        client.emit('registration', {
+          id: autobot.id
+        });
       });
 
-      socket.on('send-commands', function(data) {
+      client.on('send-commands', function(data) {
         if (!game.isStarted()) {
           return console.log('The game has not started yet!');
         }
@@ -48,7 +52,7 @@ module.exports = {
         game.addAction(autobot.id, data.action, data.options)
       });
 
-      socket.on('disconnect', function() {
+      client.on('disconnect', function() {
         console.log('user disconnected ' + id);
 
         if (autobot) {

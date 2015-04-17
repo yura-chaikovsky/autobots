@@ -11,14 +11,19 @@
       var socket = io('http://localhost:8000');
       var directions = ['up', 'down', 'right', 'left'];
       var token = 'Ironhide';
-      var position;
+      var currentId;
 
       socket.emit('join-game', {
         token: token
       });
 
+      socket.on('registration', function(data) {
+        currentId = data.id;
+      });
+
       socket.on('state-update', function(data) {
-        position = data.players[token].position;
+        console.log(data.players[currentId].position);
+
         socket.emit('send-commands', {
           action: 'move',
           options: {
