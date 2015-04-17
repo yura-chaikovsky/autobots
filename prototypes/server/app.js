@@ -1,6 +1,5 @@
 var mapGenerator = require('./map-generator');
 var Game = require('./gameplay');
-var Autobot = require('./autobot');
 
 module.exports = {
   run: function(options) {
@@ -16,14 +15,6 @@ module.exports = {
 
       console.log('a user connected ' + id);
 
-      socket.on('disconnect', function() {
-        console.log('user disconnected ' + id);
-
-        if (autobot) {
-          game.removePlayer(autobot);
-        }
-      });
-
       socket.on('menu-action', function(action) {
         console.log('User has selected: ' + action);
 
@@ -38,24 +29,31 @@ module.exports = {
 
       socket.on('join-game', function(data) {
         if (game.isStarted()) {
-          console.log('The game has already started! Please wait the next one.');
-
-          return;
+          return console.log('The game has already started! Please wait the next one.');
         }
 
-        console.log(data.name + ' joined the game!');
-        autobot = new Autobot(data.name);
-        game.addPlayer(autobot);
+        console.log(data.token + ' joined the game!');
+        autobot = game.addPlayer(data.token);
       });
 
       socket.on('send-commands', function(data) {
         if (!game.isStarted()) {
-          console.log('The game has not started yet!');
+          return console.log('The game has not started yet!');
+        }
 
+        if (!autobot) {
           return;
         }
 
-        autobot.addAction(data.action)
+        game.addAction(autobot.id, data.action, data.options)
+      });
+
+      socket.on('disconnect', function() {
+        console.log('user disconnected ' + id);
+
+        if (autobot) {
+          game.removePlayer(autobot.id);
+        }
       });
     });
   }

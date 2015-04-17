@@ -1,3 +1,5 @@
+var Autobot = require('./autobot');
+
 function Game(options) {
   var io = options.io;
   var players = {};
@@ -11,11 +13,14 @@ function Game(options) {
     throw new Error('Map is required!')
   }
 
+
+  // manage the game
+
   this.start = function() {
     started = true;
 
     timer = setInterval(function() {
-      currentTurn++;
+      ++currentTurn;
       console.log('Current turn: ' + currentTurn);
 
       playTact();
@@ -32,18 +37,30 @@ function Game(options) {
     return started;
   };
 
-  this.addPlayer = function(autobot) {
-    players[autobot.id] = autobot;
-    autobot.position = startPositions.shift();
+
+  // manage players
+
+  this.addPlayer = function(token) {
+    if (players[token]) {
+      throw new Error('Autobot ' + token + ' is already registered');
+    }
+
+    players[token] = new Autobot(token);
+    players[token].position = startPositions.shift();
+
+    return players[token];
   };
 
-  this.removePlayer = function(autobot) {
-    if (players[autobot.id]) {
-      delete players[autobot.id];
+  this.removePlayer = function(token) {
+    if (players[token]) {
+      delete players[token];
     }
   };
 
-  this.addActions = function(token, actions) {
+
+  // send command to the player's bot
+
+  this.addAction = function(token, action, options) {
     var player = players[token];
 
     if (!player) {
@@ -52,9 +69,7 @@ function Game(options) {
       return;
     }
 
-    for (var i = 0; i < actions.length; i++) {
-      player.addActions(actions[i]);
-    }
+    player.addAction(action, options);
   };
 
   function playTact() {
@@ -62,32 +77,14 @@ function Game(options) {
       var player = players[token];
       var action = player.getCurrentAction();
 
-      console.log(player.name, ' = ', action);
-
-      var x = player.position.x,
-          y = player.position.y;
-
-      switch (action) {
-        case 'up':
-          --y;
-          break;
-
-        case 'down':
-          ++y;
-          break;
-
-        case 'left':
-          --x;
-          break;
-
-        case 'right':
-          ++x;
-          break;
+      if (!action) {
+        return;
       }
 
-      if (map.isEmpty(x, y)) {
-        player.position.x = x;
-        player.position.y = y;
+      action.execute();
+
+      if (!map.isEmpty(player.position.x, player.position.y)) {
+        action.undo();
       }
     });
   }
@@ -96,9 +93,7 @@ function Game(options) {
     io.emit('state-update', {
       turn: currentTurn,
       map: map.getState(),
-      players: Object.keys(players).map(function(token) {
-        return players[token];
-      })
+      players: players
     });
   }
 }

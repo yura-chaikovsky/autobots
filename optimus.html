@@ -9,19 +9,19 @@
   <script>
     (function() {
       var socket = io('http://localhost:8000');
-      var actions = ['', '', '', '', '', '', 'up', 'down', 'right', 'left'];
+      var directions = ['up', 'down', 'right', 'left'];
+      var token = 'Optimus Prime';
 
       socket.emit('join-game', {
-        name: 'Optimus Prime'
+        token: token
       });
 
       socket.on('state-update', function() {
-        var newAction = actions[Math.floor(Math.random() * 10)];
-
-        console.log(newAction);
-
         socket.emit('send-commands', {
-          action: newAction
+          action: 'move',
+          options: {
+            direction: directions[Math.floor(Math.random() * 4)]
+          }
         });
       });
     })();

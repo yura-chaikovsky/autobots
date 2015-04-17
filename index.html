@@ -132,7 +132,7 @@
     @-webkit-keyframes title_fadein {0% {opacity:0;} 30% {opacity:0;} 100% {opacity:1;}}
 
     #second--container {
-    #second--container {
+      float: right;
       //display: none;
       margin: 100px auto;
       width: 900px;
@@ -189,6 +189,10 @@
         color: #fff;
       }
 
+      #battlefield-container {
+        float: left;
+      }
+
       #battlefield {
         position: absolute;
       }
@@ -222,6 +226,8 @@
     </div>
 
     <script>
+      var socket = io();
+
       $('.menu').on('click', 'li>a', function() {
         var selectedOption = $(this).attr('href');
 
@@ -231,64 +237,74 @@
     </script>
 
     <script>
-      var socket = io();
-      var initialized = false;
-      var $container = $('#battlefield-container');
-      var battleField = $('#battlefield').get(0);
-      var $turnNumber = $('#turn-number');
-      var WALL = 1;
-      var players = [];
+      (function() {
+        var initialized = false;
+        var $container = $('#battlefield-container');
+        var $battleField = $('#battlefield');
+        var $turnNumber = $('#turn-number');
+        var WALL = 1;
+        var players = {};
 
-      socket.on('state-update', function(data) {
-        if (!initialized) {
-          initializeGame(data);
+        socket.on('state-update', function(data) {
+          if (!initialized) {
+            initializeGame(data);
+          }
+
+          updateMap(data);
+        });
+
+        function initializeGame(data) {
+          var $tbody = $('<tbody></tbody>');
+          var $tr;
+          var $td;
+          var y;
+          var x;
+
           initialized = true;
-        }
 
-        for (var i = 0; i < data.players.length; i++) {
-          movePlayer(players[i], data.players[i].position)
-        }
+          $battleField.append($tbody);
 
-        $turnNumber.text(data.turn);
-      });
+          for (y = 0; y < data.map.length; y++) {
+            $tr = $('<tr>');
+            $tbody.append($tr);
 
-      function initializeGame(data) {
-        var $tbody = $('<tbody></tbody>');
-        var $tr;
-        var $td;
+            for (x = 0; x < data.map[y].length; x++) {
+              $td = $('<td></td>');
+              $tr.append($td);
 
-        $(battleField).append($tbody);
-
-        for (var y = 0; y < data.map.length; y++) {
-          $tr = $('<tr>');
-          $tbody.append($tr);
-
-          for (var x = 0; x < data.map[y].length; x++) {
-            $td = $('<td></td>');
-            $tr.append($td);
-
-            if (data.map[y][x] === WALL) {
-              $td.addClass('wall');
+              if (data.map[y][x] === WALL) {
+                $td.addClass('wall');
+              }
             }
           }
+
+          Object.keys(data.players).forEach(function(token) {
+            players[token] = $('<div class="player">' + data.players[token].name + '</div>');
+            $container.append(players[token]);
+          });
         }
 
-        for (var i = 0; i < data.players.length; i++) {
-          var $player = $('<div class="player">' + data.players[i].name + '</div>');
+        function updateMap(data) {
+          Object.keys(data.players).forEach(function(token) {
+            movePlayer(players[token], data.players[token].position)
+          });
 
-          players.push($player);
-          $container.append($player);
+          $turnNumber.text(data.turn);
         }
-      }
 
-      function movePlayer($player, position) {
-        var cellPosition = $(battleField.rows[position.y].cells[position.x]).offset();
+        function movePlayer($player, position) {
+          var cellPosition = $($battleField[0].rows[position.y].cells[position.x]).offset();
 
-        $player.css({
-          top: cellPosition.top + 5 + 'px',
-          left: cellPosition.left + 5 + 'px'
-        })
-      }
+          if (!$player) {
+            return;
+          }
+
+          $player.css({
+            top: cellPosition.top + 5 + 'px',
+            left: cellPosition.left + 5 + 'px'
+          })
+        }
+      })();
     </script>
   </body>
 </html>
