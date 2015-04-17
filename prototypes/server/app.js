@@ -11,9 +11,9 @@ module.exports = {
 
     options.io.on('connection', function(client) {
       var id = Date.now();
-      var autobot;
+      var player;
 
-      console.log('a user connected ' + id);
+      console.log('A user connected ' + id);
 
       client.on('menu-action', function(action) {
         console.log('User has selected: ' + action);
@@ -28,15 +28,11 @@ module.exports = {
       });
 
       client.on('join-game', function(data) {
-        if (game.isStarted()) {
-          return console.log('The game has already started! Please wait the next one.');
-        }
-
-        console.log(data.token + ' joined the game!');
-        autobot = game.addPlayer(data.token);
+        player = game.addPlayer(data.token);
+        console.log(player.autobot.name + ' joined the game!');
 
         client.emit('registration', {
-          id: autobot.id
+          id: player.autobot.id
         });
       });
 
@@ -45,18 +41,18 @@ module.exports = {
           return console.log('The game has not started yet!');
         }
 
-        if (!autobot) {
+        if (!player) {
           return;
         }
 
-        game.addAction(autobot.id, data.action, data.options)
+        player.autobot.addAction(data.action, data.options)
       });
 
       client.on('disconnect', function() {
-        console.log('user disconnected ' + id);
+        console.log(id + ' disconnected');
 
-        if (autobot) {
-          game.removePlayer(autobot.id);
+        if (player) {
+          console.log(player.autobot.name + ' left the game :(');
         }
       });
     });

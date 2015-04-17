@@ -175,12 +175,12 @@
 
     <div id="second--container">
       <ul class="menu">
+        <li><a href="#start">Start</a></li>
+        <li><a href="#stop">Stop</a></li>
         <li class="active"><a href="#single-player-game">Single Player</a></li>
         <li><a href="#multi-player-game">Multi Players</a></li>
         <li><a href="#settings">Settings</a></li>
         <li><a href="#about-us">About us</a></li>
-        <li><a href="#start">Start</a></li>
-        <li><a href="#stop">Stop</a></li>
       </ul>
     </div>
 
@@ -208,7 +208,7 @@
         background-color: #0F0;
         width: 6vmin;
         height: 6vmin;
-        transition: all .2s;
+        transition: all .3s;
       }
 
       .wall {
@@ -243,7 +243,7 @@
         var $battleField = $('#battlefield');
         var $turnNumber = $('#turn-number');
         var WALL = 1;
-        var players = {};
+        var autobotElements = {};
 
         socket.on('state-update', function(data) {
           if (!initialized) {
@@ -278,28 +278,28 @@
             }
           }
 
-          Object.keys(data.players).forEach(function(token) {
-            players[token] = $('<div class="player">' + data.players[token].name + '</div>');
-            $container.append(players[token]);
+          data.autobots.forEach(function(autobot) {
+            autobotElements[autobot.id] = $('<div class="player">' + autobot.name + '</div>');
+            $container.append(autobotElements[autobot.id]);
           });
         }
 
         function updateMap(data) {
-          Object.keys(data.players).forEach(function(token) {
-            movePlayer(players[token], data.players[token].position)
+          data.autobots.forEach(function(autobot) {
+            var $autobot = autobotElements[autobot.id];
+
+            if ($autobot) {
+              moveAutobot($autobot, autobot.position)
+            }
           });
 
           $turnNumber.text(data.turn);
         }
 
-        function movePlayer($player, position) {
+        function moveAutobot($autobot, position) {
           var cellPosition = $($battleField[0].rows[position.y].cells[position.x]).offset();
 
-          if (!$player) {
-            return;
-          }
-
-          $player.css({
+          $autobot.css({
             top: cellPosition.top + 5 + 'px',
             left: cellPosition.left + 5 + 'px'
           })

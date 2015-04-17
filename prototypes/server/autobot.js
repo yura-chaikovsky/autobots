@@ -1,6 +1,6 @@
-function Autobot(token) {
-  this.id = token;
-  this.name = token;
+function Autobot(name) {
+  this.id = Date.now();
+  this.name = name;
 
   this._actionStack = [];
 

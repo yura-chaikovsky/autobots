@@ -1,8 +1,10 @@
 var Autobot = require('./autobot');
+var Player = require('./player');
 
 function Game(options) {
   var io = options.io;
   var players = {};
+  var autobots = [];
   var map = options.map;
   var startPositions = map.getStartPositions();
   var currentTurn = 0;
@@ -41,41 +43,22 @@ function Game(options) {
   // manage players
 
   this.addPlayer = function(token) {
-    if (players[token]) {
-      throw new Error('Autobot ' + token + ' is already registered');
-    }
-
-    players[token] = new Autobot(token);
-    players[token].position = startPositions.shift();
-
-    return players[token];
-  };
-
-  this.removePlayer = function(token) {
-    if (players[token]) {
-      delete players[token];
-    }
-  };
-
-
-  // send command to the player's bot
-
-  this.addAction = function(token, action, options) {
     var player = players[token];
 
     if (!player) {
-      console.log('Invalid Token ' + token);
-
-      return;
+      player = new Player(token, getAutobotByToken(token));
+      players[token] = player;
+      player.autobot.position = startPositions.shift();
+      autobots.push(player.autobot)
     }
 
-    player.addAction(action, options);
+    return player;
   };
 
+
   function playTact() {
-    Object.keys(players).forEach(function(token) {
-      var player = players[token];
-      var action = player.getCurrentAction();
+    autobots.forEach(function(autobot) {
+      var action = autobot.getCurrentAction();
 
       if (!action) {
         return;
@@ -83,17 +66,43 @@ function Game(options) {
 
       action.execute();
 
-      if (!map.isEmpty(player.position.x, player.position.y)) {
+      if (!isPositionValid()) {
         action.undo();
       }
     });
+  }
+
+  function isPositionValid() {
+    var positions = {};
+
+    for (var i = 0; i < autobots.length; i++) {
+      var autobot = autobots[i];
+      var positionSlug = '_' + autobot.position.x + '_' + autobot.position.y;
+
+      if (!map.isEmpty(autobot.position.x, autobot.position.y)) {
+        return false;
+      }
+
+      if (positions[positionSlug]) {
+        return false;
+      }
+
+      positions[positionSlug] = true;
+
+    }
+
+    return true;
+  }
+
+  function getAutobotByToken(token) {
+    return new Autobot(token);
   }
 
   function broadcastState() {
     io.emit('state-update', {
       turn: currentTurn,
       map: map.getState(),
-      players: players
+      autobots: autobots
     });
   }
 }
