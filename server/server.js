@@ -6,7 +6,7 @@ var app = new require('../prototypes/server/app.js');
 var PORT = 8000;
 
 app.run({
-  tick: 300,
+  tick: 500,
   width: 11,
   height: 11,
   io: io

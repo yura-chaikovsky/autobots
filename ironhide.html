@@ -22,7 +22,11 @@
       });
 
       socket.on('state-update', function(data) {
-        console.log(data.players[currentId].position);
+        var me = data.autobots.filter(function(autobot) {
+          return autobot.id === currentId;
+        })[0];
+
+        console.log(me.position);
 
         socket.emit('send-commands', {
           action: 'move',
