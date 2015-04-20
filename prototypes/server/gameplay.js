@@ -1,63 +1,107 @@
-function Gameplay(options) {
-  var players = [];
+var Autobot = require('./autobot');
+var Bullet = require('./bullet');
+var Player = require('./player');
+
+function Game(options) {
+  var game = this;
+  var io = options.io;
+  var players = {};
+  var autobots = [];
+  var bullets = [];
   var map = options.map;
-  var middle = Math.floor(map[0].length / 2);
-  var places = [
-    { x: middle , y: 0 },
-    { x: middle , y: map.length - 1 }
-  ];
+  var startPositions = map.getStartPositions();
+  var currentTurn = 0;
+  var started = false;
+  var timer;
 
   if (!map) {
     throw new Error('Map is required!')
   }
 
+  // manage the game
+
   this.start = function() {
-    console.log('');
-    console.log('');
-    console.log('Welcome to Autobots!');
+    started = true;
 
-    this.placePlayers();
-    this.printList();
-    this.drawMap();
+    timer = setInterval(function() {
+      ++currentTurn;
+      console.log('Current turn: ' + currentTurn);
+
+      playTact();
+      broadcastState();
+    }, options.tick);
   };
 
-  this.addPlayer = function(autobot) {
-    players.push(autobot);
-
-    autobot.label = players.length - 1;
+  this.stop = function() {
+    clearInterval(timer);
+    started = false;
   };
 
-  this.printList = function() {
-    for (var i = 0; i < players.length; i++) {
-      console.log(players[i].label + ' - ' + players[i].name);
+  this.isStarted = function() {
+    return started;
+  };
+
+
+  // manage players
+
+  this.addPlayer = function(token) {
+    var player = players[token];
+
+    if (!player) {
+      player = new Player(token, getAutobotByToken(token));
+      players[token] = player;
+      player.autobot.position = startPositions.shift();
+      autobots.push(player.autobot)
     }
 
-    console.log('------------');
+    return player;
   };
 
-  this.placePlayers = function() {
-    for (var i = 0; i < players.length; i++) {
-      var place = places[i];
-
-      map[place.y][place.x] = players[i];
+  this.moveAutobotTo = function(options) {
+    if (!map.isEmpty(options.x, options.y)) {
+      return;
     }
+
+    if (isOccupied(options.x, options.y)) {
+      return;
+    }
+
+    options.autobot.position.x = options.x;
+    options.autobot.position.y = options.y;
   };
 
-  this.drawMap = function() {
-    for (var y = 0; y < map.length; y++) {
-      var row = map[y];
-      var rowView = '|';
+  this.createBullet = function(options) {
+    bullets.push( new Bullet(game, options) );
+  };
 
-      for (var x = 0; x < row.length; x++) {
-        rowView += row[x].label;
+  function isOccupied(x, y) {
+    return autobots.some(function(autobot) {
+      return x === autobot.position.x && y === autobot.position.y;
+    });
+  }
+
+  function playTact() {
+    autobots.forEach(function(autobot) {
+      var action = autobot.getCurrentAction();
+
+      if (action) {
+        action.execute();
       }
+    });
+  }
 
-      rowView += '|';
-      console.log(rowView);
-    }
+  function getAutobotByToken(token) {
+    return new Autobot(game, { name: token });
+  }
 
-    console.log((new Array(row.length + 3)).join('-'));
+  function broadcastState() {
+    io.emit('state-update', {
+      turn: currentTurn,
+      map: map.getState(),
+      autobots: autobots,
+      bullets: bullets
+    });
   }
 }
 
-module.exports = Gameplay;
+module.exports = Game;

@@ -1,31 +1,8 @@
-var mapItems = [
-  { name: 'aisle', label: ' ' },
-  { name: 'wall', label: 'X' }
-];
+var Map = require('./map');
+var generator = require('../../server/labyrinth/index.js');
 
-function MapGenerator() {}
-
-MapGenerator.prototype.generate = function(width, height) {
-  var map = [];
-
-  for (var y = 0; y < height; y++) {
-    var row = [];
-
-    map.push(row);
-
-    for (var x = 0; x < width; x++) {
-      row.push( getRandomObject() );
-    }
+module.exports = {
+  generate: function(width, height) {
+    return new Map(generator.generateLabyrinth(height, width));
   }
-
-  return map;
 };
-
-function getRandomObject() {
-  var n = Math.random() * 10;
-  var position = (n > 8) ? 1 : 0;
-
-  return mapItems[position];
-}
-
-module.exports = MapGenerator;

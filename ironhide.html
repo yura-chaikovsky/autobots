@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>Ironhide</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.js"></script>
+</head>
+<body>
+  <script>
+    (function() {
+      var socket = io('http://localhost:8000');
+      var directions = ['up', 'down', 'right', 'left'];
+      var token = 'Ironhide';
+      var currentId;
+
+      socket.emit('join-game', {
+        token: token
+      });
+
+      socket.on('registration', function(data) {
+        currentId = data.id;
+      });
+
+      socket.on('state-update', function(data) {
+        var me = data.autobots.filter(function(autobot) {
+          return autobot.id === currentId;
+        })[0];
+
+        console.log(me.position);
+
+        socket.emit('send-commands', {
+          action: 'move',
+          options: {
+            direction: directions[Math.floor(Math.random() * 4)]
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
