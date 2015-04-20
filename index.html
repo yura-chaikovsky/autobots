@@ -223,12 +223,42 @@
       }
 
       .player {
-        background-color: #0F0;
         height: calc(100% - 4px);
         position: absolute;
-        transition: all .5s ease;
+        transition-property: left, top;
+        transition-duration: .5s;
+        font-size: 0;
         width: calc(100% - 4px);
         margin: 2px 0 0 2px;
+
+        transform-origin: 50% 50% 0px;
+        transform: rotate(0deg);
+      }
+
+      .ironhide {
+        background: url('http://beebom.com/wp-content/uploads/2014/03/tank.png') 50% 50%;
+        background-size: cover;
+      }
+
+      .optimus-prime {
+        background: url('http://images-mediawiki-sites.thefullwiki.org/07/2/9/0/69703553638529546.png') 50% 50%; 
+        background-size: cover;
+      }
+
+      .up {
+        transform: rotate(180deg);
+      }
+
+      .down {
+        transform: rotate(0deg);
+      }
+
+      .left {
+        transform: rotate(-90deg);
+      }
+
+      .right {
+        transform: rotate(90deg);
       }
 
     </style>
@@ -271,9 +301,12 @@
 	    		var botPosition = {
 	    			left: this.props.autobot.position.x * 100 + '%',
 	    			top: this.props.autobot.position.y * 100 + '%'
-	    		}
+	    		};
+
+          var classString = 'player ' + this.props.autobot.direction + ' ' + this.props.autobot.name;
+
 	    		return (
-	    			<div className="player" style={botPosition}>{this.props.autobot.name}</div>
+	    			<div className={classString} style={botPosition}>{this.props.autobot.name}</div>
 	    		);
 	    	}
 	    });

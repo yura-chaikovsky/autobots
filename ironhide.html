@@ -10,7 +10,7 @@
     (function() {
       var socket = io('http://localhost:8000');
       var directions = ['up', 'down', 'right', 'left'];
-      var token = 'Ironhide';
+      var token = 'ironhide';
       var currentId;
 
       socket.emit('join-game', {

@@ -21,6 +21,7 @@ Autobot.ACTIONS = {
       execute: function() {
         var x = autobot.position.x;
         var y = autobot.position.y;
+        autobot.direction = options.direction;
 
         switch (options.direction) {
           case 'up':
