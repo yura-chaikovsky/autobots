@@ -1,10 +1,13 @@
 var Autobot = require('./autobot');
+var Bullet = require('./bullet');
 var Player = require('./player');
 
 function Game(options) {
+  var game = this;
   var io = options.io;
   var players = {};
   var autobots = [];
+  var bullets = [];
   var map = options.map;
   var startPositions = map.getStartPositions();
   var currentTurn = 0;
@@ -14,7 +17,6 @@ function Game(options) {
   if (!map) {
     throw new Error('Map is required!')
   }
-
 
   // manage the game
 
@@ -55,54 +57,49 @@ function Game(options) {
     return player;
   };
 
+  this.moveAutobotTo = function(options) {
+    if (!map.isEmpty(options.x, options.y)) {
+      return;
+    }
+
+    if (isOccupied(options.x, options.y)) {
+      return;
+    }
+
+    options.autobot.position.x = options.x;
+    options.autobot.position.y = options.y;
+  };
+
+  this.createBullet = function(options) {
+    bullets.push( new Bullet(game, options) );
+  };
+
+  function isOccupied(x, y) {
+    return autobots.some(function(autobot) {
+      return x === autobot.position.x && y === autobot.position.y;
+    });
+  }
 
   function playTact() {
     autobots.forEach(function(autobot) {
       var action = autobot.getCurrentAction();
 
-      if (!action) {
-        return;
-      }
-
-      action.execute();
-
-      if (!isPositionValid()) {
-        action.undo();
+      if (action) {
+        action.execute();
       }
     });
   }
 
-  function isPositionValid() {
-    var positions = {};
-
-    for (var i = 0; i < autobots.length; i++) {
-      var autobot = autobots[i];
-      var positionSlug = '_' + autobot.position.x + '_' + autobot.position.y;
-
-      if (!map.isEmpty(autobot.position.x, autobot.position.y)) {
-        return false;
-      }
-
-      if (positions[positionSlug]) {
-        return false;
-      }
-
-      positions[positionSlug] = true;
-
-    }
-
-    return true;
-  }
-
   function getAutobotByToken(token) {
-    return new Autobot(token);
+    return new Autobot(game, { name: token });
   }
 
   function broadcastState() {
     io.emit('state-update', {
       turn: currentTurn,
       map: map.getState(),
-      autobots: autobots
+      autobots: autobots,
+      bullets: bullets
     });
   }
 }

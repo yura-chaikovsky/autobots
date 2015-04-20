@@ -211,6 +211,14 @@
         transition: all .3s;
       }
 
+      .bullet {
+        position: absolute;
+        background-color: #ff4652;
+        width: 1vmin;
+        height: 1vmin;
+        transition: all .3s;
+      }
+
       .wall {
         background-color: #fff;
       }
@@ -244,6 +252,7 @@
         var $turnNumber = $('#turn-number');
         var WALL = 1;
         var autobotElements = {};
+        var bulletElements = {};
 
         socket.on('state-update', function(data) {
           if (!initialized) {
@@ -292,8 +301,26 @@
               moveAutobot($autobot, autobot.position)
             }
           });
+          
+          data.bullets.forEach(function(bullet) {
+            if (!bulletElements[bullet.id]) {
+              bulletElements[bullet.id] = $('<div class="bullet"></div>');
+              $container.append(bulletElements[bullet.id]);
+            }
+
+            moveBullet(bulletElements[bullet.id], bullet.position);
+          });
 
           $turnNumber.text(data.turn);
+        }
+
+        function moveBullet($bullet, position) {
+          var cellPosition = $($battleField[0].rows[position.y].cells[position.x]).offset();
+
+          $bullet.css({
+            top: cellPosition.top + 20 + 'px',
+            left: cellPosition.left + 20 + 'px'
+          });
         }
 
         function moveAutobot($autobot, position) {
@@ -302,7 +329,7 @@
           $autobot.css({
             top: cellPosition.top + 5 + 'px',
             left: cellPosition.left + 5 + 'px'
-          })
+          });
         }
       })();
     </script>

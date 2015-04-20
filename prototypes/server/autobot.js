@@ -1,9 +1,12 @@
-function Autobot(name) {
+function Autobot(game, options) {
   this.id = Date.now();
-  this.name = name;
+  this.name = options.name;
+
+  this._game = game;
 
   this._actionStack = [];
 
+  this.direction = 'up';
   this.position = {
     x: 0,
     y: 0
@@ -12,36 +15,47 @@ function Autobot(name) {
 
 Autobot.ACTIONS = {
   move: function(autobot, options) {
-    var oldPosition = {
-      x: autobot.position.x,
-      y: autobot.position.y
-    };
-
     return {
       name: 'move',
       options: options,
       execute: function() {
+        var x = autobot.position.x;
+        var y = autobot.position.y;
+
         switch (options.direction) {
           case 'up':
-            ++autobot.position.y;
+            ++y;
             break;
 
           case 'down':
-            --autobot.position.y;
+            --y;
             break;
 
           case 'right':
-            ++autobot.position.x;
+            ++x;
             break;
 
           case 'left':
-            --autobot.position.x;
+            --x;
             break;
         }
-      },
-      undo: function() {
-        autobot.position.x = oldPosition.x;
-        autobot.position.y = oldPosition.y;
+
+        autobot._game.moveAutobotTo({
+          autobot: autobot,
+          x: x,
+          y: y
+        });
+      }
+    };
+  },
+  fire: function(autobot) {
+    return {
+      execute: function() {
+        autobot._game.createBullet({
+          direction: autobot.direction,
+          x: autobot.position.x,
+          y: autobot.position.y
+        })
       }
     };
   }
