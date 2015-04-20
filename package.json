@@ -1,0 +1,17 @@
+{
+  "name": "autobots",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Scoba1988/autobots.git"
+  },
+  "author": "Telenor Client Side Team",
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-install": "^0.4.0",
+    "gulp-react": "^3.0.1",
+    "gulp-sass": "^1.3.3"
+  }
+}
