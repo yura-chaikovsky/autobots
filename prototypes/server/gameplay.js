@@ -7,7 +7,7 @@ function Game(options) {
   var io = options.io;
   var players = {};
   var autobots = [];
-  var bullets = [];
+  var bullets = {};
   var map = options.map;
   var startPositions = map.getStartPositions();
   var currentTurn = 0;
@@ -70,9 +70,32 @@ function Game(options) {
     options.autobot.position.y = options.y;
   };
 
-  this.createBullet = function(options) {
-    bullets.push( new Bullet(game, options) );
+  this.moveBulletTo = function(options) {
+    if (!map.isEmpty(options.x, options.y)) {
+      destroyBullet(options.bullet);
+
+      return;
+    }
+
+    if (isOccupied(options.x, options.y)) {
+      destroyBullet(options.bullet);
+
+      return;
+    }
+
+    options.bullet.position.x = options.x;
+    options.bullet.position.y = options.y;
   };
+
+  this.createBullet = function(options) {
+    var bullet = new Bullet(game, options);
+
+    bullets[bullet.id] = bullet;
+  };
+
+  function destroyBullet(bullet) {
+    delete bullets[bullet.id];
+  }
 
   function isOccupied(x, y) {
     return autobots.some(function(autobot) {
@@ -83,6 +106,14 @@ function Game(options) {
   function playTact() {
     autobots.forEach(function(autobot) {
       var action = autobot.getCurrentAction();
+
+      if (action) {
+        action.execute();
+      }
+    });
+
+    Object.keys(bullets).forEach(function(id) {
+      var action = bullets[id].getCurrentAction();
 
       if (action) {
         action.execute();

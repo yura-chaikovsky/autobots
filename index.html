@@ -216,7 +216,7 @@
       	box-sizing: border-box;
 				float: left;
       	height: 7vmin;
-      	width: 7vmin; 
+      	width: 7vmin;
       }
 
       .wall {
@@ -236,6 +236,19 @@
         font-size: 0;
         width: calc(100% - 4px);
         margin: 2px 0 0 2px;
+
+        transform-origin: 50% 50% 0px;
+        transform: rotate(0deg);
+      }
+
+      .bullet {
+        background-color: #FF0000;
+        height: 10%
+        width: 10%;
+        position: absolute;
+        transition-property: left, top;
+        transition-duration: .5s;
+        margin: 45% 0 0 45%;
 
         transform-origin: 50% 50% 0px;
         transform: rotate(0deg);
@@ -320,13 +333,29 @@
 	    	}
 	    });
 
+      var Bullet = React.createClass({
+        render: function() {
+          var position = {
+            left: this.props.bullet.position.x * 100 + '%',
+            top: this.props.bullet.position.y * 100 + '%'
+          };
+
+          var classString = 'bullet ' + this.props.bullet.direction;
+
+          return (
+            <div className={classString} style={position}>*</div>
+          );
+        }
+      });
+
 	    var BattlefieldContainer = React.createClass({
 	    	getInitialState: function() {
 			    socket.on('state-update', this.setState.bind(this));
 	    		return {
 	    			turn: 0,
 	    			map: [],
-	    			autobots: []
+	    			autobots: [],
+	    			bullets: []
 	    		};
 	    	},
 	    	render: function() {
@@ -334,12 +363,21 @@
   		      return <AutoBot autobot={bot} />;
   		    });
 
+          var bulletsData = this.state.bullets
+          var bullets = {};
+
+
+          Object.keys(bulletsData).forEach(function(id) {
+            bullets[id] = <Bullet bullet={bulletsData[id]} />;
+          });
+
 	    		return (
 	    			<div id='battlefield-container'>
 		    			<TurnCounter turn={this.state.turn} />
 							<div id="wrap">
 								<BattleField data={this.state.map} />
 								{autobots}
+								{bullets}
 							</div>
 	    			</div>
 	    		);

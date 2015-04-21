@@ -9,13 +9,19 @@
   <script>
     (function() {
       var socket = io('http://localhost:8000');
-      var directions = ['up', 'down', 'right', 'left'];
       var token = 'ironhide';
+
+      var actions = [
+//        { action: 'move', options: { direction: 'up' } },
+//        { action: 'move', options: { direction: 'down' } },
+        { action: 'move', options: { direction: 'right' } },
+        { action: 'move', options: { direction: 'left' } },
+        { action: 'fire', options: {} }
+      ];
+
       var currentId;
 
-      socket.emit('join-game', {
-        token: token
-      });
+      socket.emit('join-game', { token: token });
 
       socket.on('registration', function(data) {
         currentId = data.id;
@@ -28,12 +34,7 @@
 
         console.log(me.position);
 
-        socket.emit('send-commands', {
-          action: 'move',
-          options: {
-            direction: directions[Math.floor(Math.random() * 4)]
-          }
-        });
+        socket.emit('send-commands', actions[Math.floor(Math.random() * 3)]);
       });
     })();
     

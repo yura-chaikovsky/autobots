@@ -15,7 +15,6 @@ Bullet.ACTIONS = {
   move: function(bullet) {
     return {
       name: 'move',
-      options: options,
       execute: function() {
         var x = bullet.position.x;
         var y = bullet.position.y;
@@ -38,11 +37,19 @@ Bullet.ACTIONS = {
             break;
         }
 
-        this._actionStack.push(Bullet.ACTIONS.move(this));
-        this._game.moveBulletTo(x, y);
+        bullet._actionStack.push(Bullet.ACTIONS.move(bullet));
+        bullet._game.moveBulletTo({
+          bullet: bullet,
+          x: x,
+          y: y
+        });
       }
     };
   }
+};
+
+Bullet.prototype.getCurrentAction = function() {
+  return this._actionStack.shift();
 };
 
 module.exports = Bullet;
