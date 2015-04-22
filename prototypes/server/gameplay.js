@@ -70,25 +70,46 @@ function Game(options) {
     options.autobot.position.y = options.y;
   };
 
-  this.moveBulletTo = function(options) {
-    if (!map.isEmpty(options.x, options.y)) {
-      destroyBullet(options.bullet);
+  this.moveBulletTo = function(bullet) {
+    var x = bullet.position.x;
+    var y = bullet.position.y;
+
+    switch (bullet.direction) {
+      case 'up':
+        ++y;
+        break;
+
+      case 'down':
+        --y;
+        break;
+
+      case 'right':
+        ++x;
+        break;
+
+      case 'left':
+        --x;
+        break;
+    }
+
+    if (!map.isEmpty(x, y)) {
+      destroyBullet(bullet);
 
       return;
     }
 
-    if (isOccupied(options.x, options.y)) {
-      destroyBullet(options.bullet);
+    if (isOccupied(x, y)) {
+      destroyBullet(bullet);
 
       return;
     }
 
-    options.bullet.position.x = options.x;
-    options.bullet.position.y = options.y;
+    bullet.position.x = x;
+    bullet.position.y = y;
   };
 
   this.createBullet = function(options) {
-    var bullet = new Bullet(game, options);
+    var bullet = new Bullet(options);
 
     bullets[bullet.id] = bullet;
   };
@@ -113,11 +134,7 @@ function Game(options) {
     });
 
     Object.keys(bullets).forEach(function(id) {
-      var action = bullets[id].getCurrentAction();
-
-      if (action) {
-        action.execute();
-      }
+      game.moveBulletTo(bullets[id]);
     });
   }
 
