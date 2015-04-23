@@ -7,10 +7,7 @@ var Player = require('./player');
 function Game(app, options) {
   var game = this;
   var players = {};
-  var autobots = [];
-  var bullets = {};
   var map = options.map;
-  var startPositions = map.getStartPositions();
   var currentTurn = 0;
   var started = false;
   var timer;
@@ -45,17 +42,17 @@ function Game(app, options) {
   this.getState = function() {
     return {
       turn: currentTurn,
-      map: map.getState(),
-      autobots: autobots,
-      bullets: bullets
+      map: map.getField(),
+      autobots: map.getBots(),
+      bullets: map.getBullets(),
+      walls: map.getWalls()
     };
   };
-
 
   this.addPlayer = function(token) {
     if (!players[token]) {
       players[token] = createPlayer(token);
-      autobots.push(players[token].autobot)
+      map.place(players[token].autobot, map.getStartPosition());
     }
 
     return players[token];
@@ -69,80 +66,52 @@ function Game(app, options) {
 
     autobot.direction = options.direction;
 
-    if (!map.isEmpty(newPosition)) {
-      return;
+    if (map.isEmpty(newPosition)) {
+      map.place(autobot, newPosition);
     }
-
-    if (isOccupied(newPosition)) {
-      return;
-    }
-
-    autobot.moveTo(newPosition);
   };
 
   this.doAutobotFire = function(autobot, options) {
     var bullet = new Bullet({
-      direction: autobot.direction,
-      position: autobot.position.clone()
+      direction: autobot.direction
     });
 
-    bullets[bullet.id] = bullet;
+    map.place(bullet, autobot.position.clone());
   };
   
   
   // helpers
 
   function playTact() {
-    autobots.forEach(function(autobot) {
-      var action = autobot.getCurrentAction();
-
-      if (action) {
-        action.execute();
-      }
+    map.getBots().forEach(function(autobot) {
+      autobot.getCurrentAction().execute();
     });
 
-    Object.keys(bullets).forEach(function(id) {
-      moveBulletTo(bullets[id]);
+    map.getBullets().forEach(function(bullet) {
+      moveBullet(bullet);
     });
   }
 
-  function moveBulletTo(bullet) {
+  function moveBullet(bullet) {
     var newPosition = bullet.position.getSibling(bullet.direction);
 
     if (!map.isEmpty(newPosition)) {
-      destroyBullet(bullet);
+      map.remove(bullet);
 
       return;
     }
 
-    if (isOccupied(newPosition)) {
-      destroyBullet(bullet);
-
-      return;
-    }
-
-    bullet.position.copyFrom(newPosition);
-  }
-
-  function destroyBullet(bullet) {
-    delete bullets[bullet.id];
-  }
-
-  function isOccupied(position) {
-    return autobots.some(function(autobot) {
-      return position.equalTo(autobot.position);
-    });
+    bullet.position = newPosition;
   }
 
   function createPlayer(token) {
-    var autobot = new Autobot(game, {
+    var botOptions = {
       name: token,
-      position: startPositions.shift(),
       direction: 'right',
       health: config.autobot.health
-    });
+    };
 
-    return new Player(token, autobot);
+    return new Player(token, new Autobot(botOptions, game));
   }
 }
 

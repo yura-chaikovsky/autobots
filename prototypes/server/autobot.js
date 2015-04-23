@@ -16,15 +16,21 @@ var ACTIONS = {
         autobot._game.doAutobotFire(autobot, options)
       }
     };
+  },
+  wait: function(autobot, options) {
+    return {
+      _name: 'wait',
+      _options: options,
+      execute: function() {}
+    };
   }
 };
 
 
-function Autobot(game, options) {
+function Autobot(options, game) {
   this.id = Date.now();
   this.name = options.name;
   this.direction = options.direction;
-  this.position = options.position;
   this.health = options.health;
 
   this._game = game;
@@ -43,13 +49,8 @@ Autobot.prototype.addAction = function(action, options) {
   this._actionStack.push(command(this, options));
 };
 
-Autobot.prototype.moveTo = function(position) {
-  this.position.x = position.x;
-  this.position.y = position.y;
-};
-
 Autobot.prototype.getCurrentAction = function() {
-  return this._actionStack.shift();
+  return this._actionStack.shift() || ACTIONS.wait();
 };
 
 module.exports = Autobot;

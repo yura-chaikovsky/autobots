@@ -1,6 +1,5 @@
 function Wall(options) {
   this._health = options.health;
-  this.position = options.position;
 }
 
 Wall.prototype.hit = function() {

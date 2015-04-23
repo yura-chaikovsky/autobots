@@ -11,11 +11,6 @@ Position.prototype.clone = function() {
   return new Position(this.x, this.y);
 };
 
-Position.prototype.copyFrom = function(position) {
-  this.x = position.x;
-  this.y = position.y;
-};
-
 Position.prototype.getSibling = function(direction) {
   switch (direction) {
     case 'up':
