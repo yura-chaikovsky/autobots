@@ -19,11 +19,13 @@ var ACTIONS = {
   }
 };
 
+
 function Autobot(game, options) {
   this.id = Date.now();
   this.name = options.name;
   this.direction = options.direction;
   this.position = options.position;
+  this.health = options.health;
 
   this._game = game;
   this._actionStack = [];

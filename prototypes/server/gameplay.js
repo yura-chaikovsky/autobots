@@ -1,10 +1,11 @@
+var config = require('./config');
+
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
 var Player = require('./player');
 
-function Game(options) {
+function Game(app, options) {
   var game = this;
-  var io = options.io;
   var players = {};
   var autobots = [];
   var bullets = {};
@@ -28,7 +29,7 @@ function Game(options) {
       console.log('Current turn: ' + currentTurn);
 
       playTact();
-      broadcastState();
+      app.broadcastGameState(game);
     }, options.tick);
   };
 
@@ -41,22 +42,28 @@ function Game(options) {
     return started;
   };
 
-
-  // manage players
-
-  this.addPlayer = function(token) {
-    var player = players[token];
-
-    if (!player) {
-      player = new Player(token, getAutobotByToken(token));
-      players[token] = player;
-      player.autobot.position = startPositions.shift();
-      autobots.push(player.autobot)
-    }
-
-    return player;
+  this.getState = function() {
+    return {
+      turn: currentTurn,
+      map: map.getState(),
+      autobots: autobots,
+      bullets: bullets
+    };
   };
 
+
+  this.addPlayer = function(token) {
+    if (!players[token]) {
+      players[token] = createPlayer(token);
+      autobots.push(players[token].autobot)
+    }
+
+    return players[token];
+  };
+
+  
+  // Autobot actions
+  
   this.doAutobotMove = function(autobot, options) {
     var newPosition = autobot.position.getSibling(options.direction);
 
@@ -81,8 +88,25 @@ function Game(options) {
 
     bullets[bullet.id] = bullet;
   };
+  
+  
+  // helpers
 
-  this.moveBulletTo = function(bullet) {
+  function playTact() {
+    autobots.forEach(function(autobot) {
+      var action = autobot.getCurrentAction();
+
+      if (action) {
+        action.execute();
+      }
+    });
+
+    Object.keys(bullets).forEach(function(id) {
+      moveBulletTo(bullets[id]);
+    });
+  }
+
+  function moveBulletTo(bullet) {
     var newPosition = bullet.position.getSibling(bullet.direction);
 
     if (!map.isEmpty(newPosition)) {
@@ -98,7 +122,7 @@ function Game(options) {
     }
 
     bullet.position.copyFrom(newPosition);
-  };
+  }
 
   function destroyBullet(bullet) {
     delete bullets[bullet.id];
@@ -110,31 +134,15 @@ function Game(options) {
     });
   }
 
-  function playTact() {
-    autobots.forEach(function(autobot) {
-      var action = autobot.getCurrentAction();
-
-      if (action) {
-        action.execute();
-      }
+  function createPlayer(token) {
+    var autobot = new Autobot(game, {
+      name: token,
+      position: startPositions.shift(),
+      direction: 'right',
+      health: config.autobot.health
     });
 
-    Object.keys(bullets).forEach(function(id) {
-      game.moveBulletTo(bullets[id]);
-    });
-  }
-
-  function getAutobotByToken(token) {
-    return new Autobot(game, { name: token });
-  }
-
-  function broadcastState() {
-    io.emit('state-update', {
-      turn: currentTurn,
-      map: map.getState(),
-      autobots: autobots,
-      bullets: bullets
-    });
+    return new Player(token, autobot);
   }
 }
 

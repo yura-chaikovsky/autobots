@@ -1,3 +1,5 @@
+var config = require('./config');
+
 var Position = require('./position');
 var Wall = require('./wall');
 
@@ -21,7 +23,8 @@ function Map(field) {
 
       if (cell === Map.WALL) {
         var wall = new Wall({
-          position: new Position(x, y)
+          position: new Position(x, y),
+          health: config.wall.health
         });
 
         this._walls[wall.id] = wall;

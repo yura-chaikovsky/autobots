@@ -1,5 +1,5 @@
 function Wall(options) {
-  this._health = 2;
+  this._health = options.health;
   this.position = options.position;
 }
 

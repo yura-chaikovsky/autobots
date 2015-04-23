@@ -1,28 +1,26 @@
 var fs = require('fs');
 var server = require('http').Server(handler);
 var io = require('socket.io')(server);
-var app = new require('../prototypes/server/app.js');
 var path = require('path');
+
+var app = new require('../prototypes/server/app.js');
+var config = require('../prototypes/server/config.json');
+
 
 var PORT = 8000;
 
-app.run({
-  tick: 500,
-  width: 11,
-  height: 11,
-  io: io
-});
+app.initialize(io, config);
 
 console.log('listening on *:' + PORT);
 server.listen(PORT);
 
 function handler(request, response) {
    console.log('request starting...');
-  	
+
   	var filePath = '.' + request.url;
   	if (filePath === './')
   		filePath = './index.html';
-  		
+
   	var extname = path.extname(filePath);
   	var contentType = 'text/html';
   	switch (extname) {
@@ -41,9 +39,9 @@ function handler(request, response) {
   			contentType = 'image/png';
   			break;
   	}
-  	
+
   	path.exists(filePath, function(exists) {
-  	
+
   		if (exists) {
   			fs.readFile(filePath, function(error, content) {
   				if (error) {
