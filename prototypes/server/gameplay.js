@@ -57,70 +57,56 @@ function Game(options) {
     return player;
   };
 
-  this.moveAutobotTo = function(options) {
-    if (!map.isEmpty(options.x, options.y)) {
+  this.doAutobotMove = function(autobot, options) {
+    var newPosition = autobot.position.getSibling(options.direction);
+
+    autobot.direction = options.direction;
+
+    if (!map.isEmpty(newPosition)) {
       return;
     }
 
-    if (isOccupied(options.x, options.y)) {
+    if (isOccupied(newPosition)) {
       return;
     }
 
-    options.autobot.position.x = options.x;
-    options.autobot.position.y = options.y;
+    autobot.moveTo(newPosition);
+  };
+
+  this.doAutobotFire = function(autobot, options) {
+    var bullet = new Bullet({
+      direction: autobot.direction,
+      position: autobot.position.clone()
+    });
+
+    bullets[bullet.id] = bullet;
   };
 
   this.moveBulletTo = function(bullet) {
-    var x = bullet.position.x;
-    var y = bullet.position.y;
+    var newPosition = bullet.position.getSibling(bullet.direction);
 
-    switch (bullet.direction) {
-      case 'up':
-        ++y;
-        break;
-
-      case 'down':
-        --y;
-        break;
-
-      case 'right':
-        ++x;
-        break;
-
-      case 'left':
-        --x;
-        break;
-    }
-
-    if (!map.isEmpty(x, y)) {
+    if (!map.isEmpty(newPosition)) {
       destroyBullet(bullet);
 
       return;
     }
 
-    if (isOccupied(x, y)) {
+    if (isOccupied(newPosition)) {
       destroyBullet(bullet);
 
       return;
     }
 
-    bullet.position.x = x;
-    bullet.position.y = y;
-  };
-
-  this.createBullet = function(options) {
-    var bullet = new Bullet(options);
-
-    bullets[bullet.id] = bullet;
+    bullet.position.copyFrom(newPosition);
   };
 
   function destroyBullet(bullet) {
     delete bullets[bullet.id];
   }
 
-  function isOccupied(x, y) {
+  function isOccupied(position) {
     return autobots.some(function(autobot) {
-      return x === autobot.position.x && y === autobot.position.y;
+      return position.equalTo(autobot.position);
     });
   }
 

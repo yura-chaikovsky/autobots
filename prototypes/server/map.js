@@ -1,8 +1,33 @@
+var Position = require('./position');
+var Wall = require('./wall');
+
 function Map(field) {
   this._field = field;
 
   this.height = field.length;
   this.width = field[0].length;
+
+  this._bots = {};
+  this._bullets = {};
+  this._walls = {};
+
+  this._objects = {};
+  
+  for (var y = 0; x < field.length; x++) {
+    var row = field[y];
+  
+    for (var x = 0; x < row.length; x++) {
+      var cell = row[x];
+
+      if (cell === Map.WALL) {
+        var wall = new Wall({
+          position: new Position(x, y)
+        });
+
+        this._walls[wall.id] = wall;
+      }
+    }
+  }
 }
 
 Map.EMPTY = 0;
@@ -17,19 +42,19 @@ Map.prototype.getStartPositions = function() {
   var middle = Math.floor(this.width / 2);
 
   return [
-    { x: middle , y: 0 },
-    { x: middle , y: this.height - 1 }
+    new Position(middle , 0),
+    new Position(middle , this.height - 1)
   ];
 };
 
-Map.prototype.isOnMap = function(x, y) {
-  return this._field[y] !== undefined
-    && this._field[y][x] !== undefined;
+Map.prototype.isOnMap = function(position) {
+  return this._field[position.y] !== undefined
+    && this._field[position.y][position.x] !== undefined;
 };
 
-Map.prototype.isEmpty = function(x, y) {
-  return this.isOnMap(x, y)
-    && this._field[y][x] === Map.EMPTY;
+Map.prototype.isEmpty = function(position) {
+  return this.isOnMap(position)
+    && this._field[position.y][position.x] === Map.EMPTY;
 };
 
 Map.prototype.getState = function() {
@@ -37,3 +62,4 @@ Map.prototype.getState = function() {
 };
 
 module.exports = Map;
+
