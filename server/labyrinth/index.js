@@ -1,5 +1,5 @@
-var EMPTY = 0,
-  FILL = 1;
+var EMPTY = '0',
+  FILL = '1';
 
 /*Получаем случайное целое число от 0 до maximumValue*/
 function makeOtlichnyiRandom(maximumValue) {

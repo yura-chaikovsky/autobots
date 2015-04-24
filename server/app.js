@@ -2,14 +2,15 @@ var mapGenerator = require('./map-generator');
 var Game = require('./gameplay');
 
 module.exports = {
-  run: function(options) {
-    var game = new Game({
-      io: options.io,
-      map: mapGenerator.generate(options.width, options.height),
-      tick: options.tick
+  initialize: function(io, config) {
+    var game = new Game(this, {
+      map: mapGenerator.generate(config.map),
+      tick: config.game.tick
     });
 
-    options.io.on('connection', function(client) {
+    this.io = io;
+
+    io.on('connection', function(client) {
       var id = Date.now();
       var player;
 
@@ -56,5 +57,9 @@ module.exports = {
         }
       });
     });
+  },
+  broadcastGameState: function(game) {
+    this.io.emit('state-update', game.getState());
+    this.io.emit('view-update', game.getView());
   }
 };
