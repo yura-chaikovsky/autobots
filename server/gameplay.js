@@ -2,6 +2,8 @@ var config = require('./config');
 
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
+var Wall = require('./wall');
+var Map = require('./map');
 var Player = require('./player');
 
 function Game(app, options) {
@@ -42,17 +44,25 @@ function Game(app, options) {
   this.getState = function() {
     return {
       turn: currentTurn,
-      map: map.getField(),
       autobots: map.getBots(),
       bullets: map.getBullets(),
       walls: map.getWalls()
     };
   };
 
+  this.getView = function() {
+    return {
+      turn: currentTurn,
+      autobots: map.getBots(),
+      bullets: map.getBullets(),
+      map: map.getField()
+    };
+  };
+
   this.addPlayer = function(token) {
     if (!players[token]) {
       players[token] = createPlayer(token);
-      map.place(players[token].autobot, map.getStartPosition());
+      map.add(players[token].autobot, map.getStartPosition());
     }
 
     return players[token];
@@ -61,25 +71,39 @@ function Game(app, options) {
   
   // Autobot actions
   
-  this.doAutobotMove = function(autobot, options) {
-    var newPosition = autobot.position.getSibling(options.direction);
+  this.doAutobotMove = function(bot, options) {
+    var newPosition = bot.position.getSibling(options.direction);
+    var mapItem = map.getItem(newPosition);
 
-    autobot.direction = options.direction;
+    bot.direction = options.direction;
 
-    if (map.isEmpty(newPosition)) {
-      map.place(autobot, newPosition);
+    switch (mapItem.type) {
+      case Map.OUTSIDE.type:
+      case Autobot.TYPE:
+      case Wall.TYPE:
+        return;
+
+      case Bullet.TYPE:
+        map.move(bot, newPosition);
+        doHit(bot, mapItem);
+        return;
+
+      case Map.EMPTY.type:
+        map.move(bot, newPosition);
+        return;
     }
   };
 
   this.doAutobotFire = function(autobot, options) {
     var bullet = new Bullet({
       direction: autobot.direction
-    });
+    }, game);
 
-    map.place(bullet, autobot.position.clone());
+    map.add(bullet, autobot.position.clone());
+    moveBullet(bullet);
   };
-  
-  
+
+
   // helpers
 
   function playTact() {
@@ -94,14 +118,33 @@ function Game(app, options) {
 
   function moveBullet(bullet) {
     var newPosition = bullet.position.getSibling(bullet.direction);
+    var mapItem = map.getItem(newPosition);
 
-    if (!map.isEmpty(newPosition)) {
-      map.remove(bullet);
+    switch (mapItem.type) {
+      case Map.EMPTY.type:
+        map.move(bullet, newPosition);
+        return;
 
-      return;
+      case Map.OUTSIDE.type:
+        map.remove(bullet);
+        return;
     }
 
-    bullet.position = newPosition;
+    doHit(mapItem, bullet);
+  }
+
+  function doHit(item, bullet) {
+    item.hit();
+    checkCondition(item);
+
+    bullet.hit();
+    checkCondition(bullet);
+  }
+
+  function checkCondition(item) {
+    if (item.getState().health <= 0) {
+      map.remove(item);
+    }
   }
 
   function createPlayer(token) {

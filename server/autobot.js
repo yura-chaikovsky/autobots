@@ -26,9 +26,13 @@ var ACTIONS = {
   }
 };
 
+var counter = 0;
 
 function Autobot(options, game) {
-  this.id = Date.now();
+  this.type= Autobot.TYPE;
+  this.id = Autobot.TYPE + '#' + counter;
+  ++counter;
+
   this.name = options.name;
   this.direction = options.direction;
   this.health = options.health;
@@ -36,6 +40,8 @@ function Autobot(options, game) {
   this._game = game;
   this._actionStack = [];
 }
+
+Autobot.TYPE = 'autobot';
 
 Autobot.prototype.addAction = function(action, options) {
   var command = ACTIONS[action];
@@ -51,6 +57,18 @@ Autobot.prototype.addAction = function(action, options) {
 
 Autobot.prototype.getCurrentAction = function() {
   return this._actionStack.shift() || ACTIONS.wait();
+};
+
+Autobot.prototype.hit = function() {
+  --this.health;
+
+  console.log(this.name + ' (' + this.health + 'hp)');
+};
+
+Autobot.prototype.getState = function() {
+  return {
+    health: this.health
+  };
 };
 
 module.exports = Autobot;

@@ -60,5 +60,6 @@ module.exports = {
   },
   broadcastGameState: function(game) {
     this.io.emit('state-update', game.getState());
+    this.io.emit('view-update', game.getView());
   }
 };

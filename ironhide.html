@@ -12,10 +12,13 @@
       var token = 'ironhide';
 
       var actions = [
-//        { action: 'move', options: { direction: 'up' } },
-//        { action: 'move', options: { direction: 'down' } },
+        { action: 'move', options: { direction: 'up' } },
+        { action: 'move', options: { direction: 'down' } },
         { action: 'move', options: { direction: 'right' } },
         { action: 'move', options: { direction: 'left' } },
+        { action: 'fire', options: {} },
+        { action: 'fire', options: {} },
+        { action: 'fire', options: {} },
         { action: 'fire', options: {} }
       ];
 
@@ -32,7 +35,7 @@
           return autobot.id === currentId;
         })[0];
 
-        console.log(me.position);
+        console.log(me);
 
         socket.emit('send-commands', actions[Math.floor(Math.random() * actions.length)]);
       });

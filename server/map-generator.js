@@ -1,5 +1,5 @@
 var Map = require('./map');
-var generator = require('../../server/labyrinth/index.js');
+var generator = require('./labyrinth/index.js');
 
 module.exports = {
   generate: function(options) {

@@ -4,7 +4,7 @@ function Position(x, y) {
 }
 
 Position.prototype.getSlug = function() {
-  return '_' + this.x + '_' + this.y;
+  return Position.generateSlug(this.x, this.y);
 };
 
 Position.prototype.clone = function() {
@@ -31,6 +31,17 @@ Position.prototype.getSibling = function(direction) {
 
 Position.prototype.equalTo = function(other) {
   return this.x === other.x && this.y === other.y;
+};
+
+Position.prototype.toString = function() {
+  return '(' + this.x + ', ' + this.y + ')';
+};
+
+
+// static methods
+
+Position.generateSlug = function(x, y) {
+  return '_' + x + '_' + y;
 };
 
 module.exports = Position;
