@@ -16,6 +16,8 @@
  
 ## API
 
+We use http://socket.io/ as a transport
+
 ### output
 
 `'registration'` - once after each `'join-game'` request, returns `{ id: * }` string id of your bot
