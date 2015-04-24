@@ -6,13 +6,13 @@ function Wall() {
   this.id = Wall.TYPE + '#' + counter;
   ++counter;
 
-  this._health = config.wall.health;
+  this.health = config.wall.health;
 }
 
 Wall.TYPE = 'wall';
 
 Wall.prototype.hit = function() {
-  --this._health;
+  --this.health;
 };
 
 Wall.prototype.getState = function() {
