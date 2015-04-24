@@ -3,6 +3,16 @@ function Position(x, y) {
   this.y = y;
 }
 
+
+// static methods
+
+Position.generateSlug = function(x, y) {
+  return '_' + x + '_' + y;
+};
+
+
+// methods
+
 Position.prototype.getSlug = function() {
   return Position.generateSlug(this.x, this.y);
 };
@@ -37,11 +47,11 @@ Position.prototype.toString = function() {
   return '(' + this.x + ', ' + this.y + ')';
 };
 
-
-// static methods
-
-Position.generateSlug = function(x, y) {
-  return '_' + x + '_' + y;
+Position.prototype.normalize = function() {
+  return {
+    x: this.x,
+    y: this.y
+  };
 };
 
 module.exports = Position;

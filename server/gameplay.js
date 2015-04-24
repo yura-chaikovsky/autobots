@@ -29,6 +29,10 @@ function Game(app, options) {
 
       playTact();
       app.broadcastGameState(game);
+
+      if (map.getBots().length < 2) {
+        game.stop();
+      }
     }, options.tick);
   };
 
@@ -44,11 +48,17 @@ function Game(app, options) {
   this.getState = function() {
     return {
       turn: currentTurn,
-      autobots: map.getBots(),
-      bullets: map.getBullets(),
-      walls: map.getWalls()
+      autobots: map.getBots().map(getItemState),
+      bullets: map.getBullets().map(getItemState),
+      walls: map.getWalls().map(getItemState)
     };
+
+    function getItemState(item) {
+      return item.getState();
+    }
   };
+
+
 
   this.getView = function() {
     return {

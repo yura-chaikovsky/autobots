@@ -17,6 +17,8 @@ Wall.prototype.hit = function() {
 
 Wall.prototype.getState = function() {
   return {
+    id: this.id,
+    position: this.position.normalize(),
     health: this.health
   };
 };

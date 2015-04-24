@@ -67,6 +67,10 @@ Autobot.prototype.hit = function() {
 
 Autobot.prototype.getState = function() {
   return {
+    id: this.id,
+    name: this.name,
+    direction: this.direction,
+    position: this.position.normalize(),
     health: this.health
   };
 };
