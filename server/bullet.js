@@ -19,6 +19,7 @@ Bullet.prototype.getState = function() {
   return {
     id: this.id,
     direction: this.direction,
+    health: this.health,
     position: this.position.normalize()
   };
 };
