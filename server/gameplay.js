@@ -107,12 +107,12 @@ function Game(app, options) {
   // helpers
 
   function playTact() {
-    map.getBots().forEach(function(autobot) {
-      autobot.getCurrentAction().execute();
-    });
-
     map.getBullets().forEach(function(bullet) {
       moveBullet(bullet);
+    });
+
+    map.getBots().forEach(function(autobot) {
+      autobot.getCurrentAction().execute();
     });
   }
 
