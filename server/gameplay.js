@@ -1,5 +1,3 @@
-var config = require('./config');
-
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
 var Wall = require('./wall');
@@ -8,7 +6,7 @@ var Player = require('./player');
 
 function Game(app, options) {
   var game = this;
-  var players = {};
+  var players = [];
   var map = options.map;
   var currentTurn = 0;
   var started = false;
@@ -36,6 +34,31 @@ function Game(app, options) {
     }, options.tick);
   };
 
+  this.join = function(token) {
+    var player = this.getPlayer(token);
+
+    if (player) {
+      return;
+    }
+
+    player = new Player(token, game);
+    players.push(player);
+
+    // direction should be random
+    player.autobot = new Autobot({
+      name: token,
+      direction: 'right'
+    });
+
+    map.add(player.autobot, map.getStartPosition());
+  };
+
+  this.getPlayer = function(token) {
+    return players.filter(function(player) {
+      return player.token === token;
+    })[0];
+  };
+
   this.stop = function() {
     clearInterval(timer);
     started = false;
@@ -59,7 +82,6 @@ function Game(app, options) {
   };
 
 
-
   this.getView = function() {
     return {
       turn: currentTurn,
@@ -67,15 +89,6 @@ function Game(app, options) {
       bullets: map.getBullets(),
       map: map.getField()
     };
-  };
-
-  this.addPlayer = function(token) {
-    if (!players[token]) {
-      players[token] = createPlayer(token);
-      map.add(players[token].autobot, map.getStartPosition());
-    }
-
-    return players[token];
   };
 
   
@@ -121,8 +134,10 @@ function Game(app, options) {
       moveBullet(bullet);
     });
 
-    map.getBots().forEach(function(autobot) {
-      autobot.getCurrentAction().execute();
+    players.forEach(function(player) {
+      var action = player.getCurrentAction();
+
+      action.execute();
     });
   }
 
@@ -155,16 +170,6 @@ function Game(app, options) {
     if (item.getState().health <= 0) {
       map.remove(item);
     }
-  }
-
-  function createPlayer(token) {
-    var botOptions = {
-      name: token,
-      direction: 'right',
-      health: config.autobot.health
-    };
-
-    return new Player(token, new Autobot(botOptions, game));
   }
 }
 

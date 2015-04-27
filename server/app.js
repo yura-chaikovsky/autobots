@@ -29,7 +29,9 @@ module.exports = {
       });
 
       client.on('join-game', function(data) {
-        player = game.addPlayer(data.token);
+        game.join(data.token);
+        player = game.getPlayer(data.token);
+
         console.log(player.autobot.name + ' joined the game!');
 
         client.emit('registration', {
@@ -39,14 +41,14 @@ module.exports = {
 
       client.on('send-commands', function(data) {
         if (!game.isStarted()) {
-          return console.log('The game has not started yet!');
+          return console.log('The game is not active!');
         }
 
         if (!player) {
           return;
         }
 
-        player.autobot.addAction(data.action, data.options)
+        player.addAction(data.action, data.options)
       });
 
       client.on('disconnect', function() {

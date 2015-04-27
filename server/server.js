@@ -23,7 +23,7 @@ var CONTENT_TYPES = {
 
 function handler(request, response) {
   var relativePath = request.url.slice(1) || 'index.html';
-  var filePath = './../view-client/' + relativePath;
+  var filePath = './view-client/' + relativePath;
   var extension = path.extname(filePath).slice(1);
   var contentType = CONTENT_TYPES[extension] || 'text/html';
 

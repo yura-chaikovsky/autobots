@@ -2,11 +2,9 @@
 
 ## Installation
 
-`cd server`
-
 `npm i` (only after code update)
 
-`node server`
+`node server/server`
 
 ## Basic usage
 
