@@ -12,6 +12,10 @@
 2. Open `localhost:8000` in your browser
 3. Press **start**
  
+## Config
+
+Game configs are set in `server/config.json`
+
 ## API
 
 We use http://socket.io/ as a transport
@@ -48,11 +52,12 @@ We use http://socket.io/ as a transport
       "id": "autobot#0",  
       "name": "ironhide",
       "direction": "down",  // **down** means to reduce `Y` coordinate
+      "health": 5,          // `0` means bot is dead
       "position": {         // `(0, 0)` - is top left corner
         "x": 6,
         "y": 2
       },
-      "health": 5   // `0` means bot is dead
+      "busyCount": 2        // bot can't move for 2 next turns
     },
     ...
   ],
@@ -60,10 +65,12 @@ We use http://socket.io/ as a transport
     {
       "id": "bullet#118",
       "direction": "right",
+      "health": 1
       "position": {
         "x": 6,
         "y": 10
-      }
+      },
+      "busyCount": 0
     }
   ],
   "walls": [
@@ -73,7 +80,7 @@ We use http://socket.io/ as a transport
         "x": 5,
         "y": 1
       },
-      "health": 1
+      "health": 2
     },
     ...
   ]
