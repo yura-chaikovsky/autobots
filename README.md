@@ -20,26 +20,31 @@ Game configs are set in `server/config.json`
 
 We use http://socket.io/ as a transport
 
+### input
+
+`'join-game'` - requires `{ token: * }` you private token (currently just a name)
+  
+  You should enter the game before it has started. Server will fire `'registration'` event with ID of your bot
+    
+`'send-commands'` - allows you to send one of the next commands to your bot
+
+  `{ action: 'move', options: { direction: 'up', rotation: 'left' } }`
+  
+    Moves your bot in selected `direction` and turns his cannon in `rotation` direction
+    
+  `{ action: 'fire', options: {} }`
+  
+    Fires a bullet in current direction of your cannon
+    
 ### output
 
 `'registration'` - once after each `'join-game'` request, returns `{ id: * }` string id of your bot
 
-`'state-update'` - each turn after game start, returns `stateData`
+  Sends you ID of your bot after `join-game`
 
-### input
+`'state-update'` - each turn after game start
 
-`'join-game'` - requires `{ token: * }` you private token (currently just a name)
-
-    fires `'registration'`
-    
-`'send-commands'` - requires one of next actions:
-
-  `{ action: 'move', options: { direction: 'up', rotation: 'left' } }`
-  
-    `direction` - moves bot in selected direction    
-    `rotation` - sets direction of the cannon
-    
-  `{ action: 'fire', options: {} }`
+  Sends state data in the format given further
 
 
 ## State data format
