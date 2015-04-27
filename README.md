@@ -25,16 +25,18 @@ We use http://socket.io/ as a transport
 ### input
 
 `'join-game'` - requires `{ token: * }` you private token (currently just a name)
+
     fires `'registration'`
     
 `'send-commands'` - requires one of next actions:
-```
-    { action: 'move', options: { direction: 'up' } },
-    { action: 'move', options: { direction: 'down' } },
-    { action: 'move', options: { direction: 'right' } },
-    { action: 'move', options: { direction: 'left' } },
-    { action: 'fire', options: {} }
-```
+
+  `{ action: 'move', options: { direction: 'up', rotation: 'left' } }`
+  
+    `direction` - moves bot in selected direction    
+    `rotation` - sets direction of the cannon
+    
+  `{ action: 'fire', options: {} }`
+
 
 ## State data format
 

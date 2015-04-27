@@ -95,25 +95,10 @@ function Game(app, options) {
   // Autobot actions
   
   this.doAutobotMove = function(bot, options) {
-    var newPosition = bot.position.getSibling(options.direction);
-    var mapItem = map.getItem(newPosition);
+    bot.direction = options.rotation || options.direction || bot.direction;
 
-    bot.direction = options.direction;
-
-    switch (mapItem.type) {
-      case Map.OUTSIDE.type:
-      case Autobot.TYPE:
-      case Wall.TYPE:
-        return;
-
-      case Bullet.TYPE:
-        map.move(bot, newPosition);
-        doHit(bot, mapItem);
-        return;
-
-      case Map.EMPTY.type:
-        map.move(bot, newPosition);
-        return;
+    if (options.direction) {
+      moveBot(bot, options.direction);
     }
   };
 
@@ -156,6 +141,27 @@ function Game(app, options) {
     }
 
     doHit(mapItem, bullet);
+  }
+
+  function moveBot(bot, direction) {
+    var newPosition = bot.position.getSibling(direction);
+    var mapItem = map.getItem(newPosition);
+
+    switch (mapItem.type) {
+      case Map.OUTSIDE.type:
+      case Autobot.TYPE:
+      case Wall.TYPE:
+        return;
+
+      case Bullet.TYPE:
+        map.move(bot, newPosition);
+        doHit(bot, mapItem);
+        return;
+
+      case Map.EMPTY.type:
+        map.move(bot, newPosition);
+        return;
+    }
   }
 
   function doHit(item, bullet) {
