@@ -5,7 +5,7 @@ var counter = 0;
 function Bullet(options) {
   this.type = Bullet.TYPE;
   this.id = Bullet.TYPE + '#' + counter;
-  this._actionTimer = 0;
+  this.busyCount = 0;
 
   ++counter;
 
@@ -25,7 +25,8 @@ Bullet.prototype.getState = function() {
     id: this.id,
     direction: this.direction,
     health: this.health,
-    position: this.position.normalize()
+    position: this.position.normalize(),
+    busyCount: this.busyCount > 0 ? this.busyCount : 0
   };
 };
 

@@ -11,14 +11,8 @@
       var socket = io('http://localhost:8000');
       var token = 'optimus-prime';
 
-      var actions = [
-        { action: 'move', options: { direction: 'up' } },
-        { action: 'move', options: { direction: 'down' } },
-        { action: 'move', options: { direction: 'right' } },
-        { action: 'move', options: { direction: 'left' } },
-        { action: 'fire', options: {} },
-        { action: 'fire', options: {} }
-      ];
+      var directions = ['up', 'down', 'right', 'left'];
+      var actions = ['move', 'fire'];
 
       var currentId;
 
@@ -29,8 +23,28 @@
       });
 
       socket.on('state-update', function(data) {
-        socket.emit('send-commands', actions[Math.floor(Math.random() * actions.length)]);
+        var me = data.autobots.filter(function(autobot) {
+          return autobot.id === currentId;
+        })[0];
+
+        console.log(me);
+
+        socket.emit('send-commands', getRandomAction());
       });
+
+      function getRandomAction() {
+        var data = {};
+
+        data.action = actions[Math.floor(Math.random() * actions.length)];
+        data.options = {};
+
+        if (data.action === 'move') {
+          data.options.direction = directions[Math.floor(Math.random() * directions.length)];
+          data.options.rotation = directions[Math.floor(Math.random() * directions.length)];
+        }
+
+        return data;
+      }
     })();
   </script>
 </body>

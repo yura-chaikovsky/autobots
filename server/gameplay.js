@@ -115,13 +115,13 @@ function Game(app, options) {
 
   function playTact() {
     map.getBullets().forEach(function(bullet) {
-      --bullet._actionTimer;
+      --bullet.busyCount;
 
-      if (bullet._actionTimer > 0) {
+      if (bullet.busyCount > 0) {
         return;
       }
 
-      bullet._actionTimer = Bullet.moveDuration;
+      bullet.busyCount = Bullet.moveDuration;
 
       moveBullet(bullet);
     });
@@ -129,15 +129,15 @@ function Game(app, options) {
     players.forEach(function(player) {
       var action;
 
-      --player.autobot._actionTimer;
+      --player.autobot.busyCount;
 
-      if (player.autobot._actionTimer > 0) {
+      if (player.autobot.busyCount > 0) {
         return;
       }
 
       action = player.getCurrentAction();
 
-      player.autobot._actionTimer = action.duration;
+      player.autobot.busyCount = action.duration;
 
       action.execute();
     });

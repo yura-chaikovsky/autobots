@@ -1,5 +1,3 @@
-var config = require('./config');
-
 var Position = require('./position');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
@@ -14,10 +12,6 @@ function Map(field) {
 
   this.height = field.length;
   this.width = field[0].length;
-
-  this._bots = {};
-  this._bullets = {};
-  this._walls = {};
 
   this._cache = {};
   this._cache[Autobot.TYPE] = {};

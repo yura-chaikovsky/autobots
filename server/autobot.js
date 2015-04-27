@@ -5,7 +5,7 @@ var counter = 0;
 function Autobot(options) {
   this.type= Autobot.TYPE;
   this.id = Autobot.TYPE + '#' + counter;
-  this._actionTimer = 0;
+  this.busyCount = 0;
 
   ++counter;
 
@@ -28,8 +28,9 @@ Autobot.prototype.getState = function() {
     id: this.id,
     name: this.name,
     direction: this.direction,
+    health: this.health,
     position: this.position.normalize(),
-    health: this.health
+    busyCount: this.busyCount > 0 ? this.busyCount : 0
   };
 };
 

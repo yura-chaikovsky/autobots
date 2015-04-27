@@ -10,10 +10,6 @@
     (function() {
       var socket = io('http://localhost:8000');
       var token = 'ironhide';
-
-      var directions = ['up', 'down', 'right', 'left'];
-      var actions = ['move', 'fire'];
-
       var currentId;
 
       socket.emit('join-game', { token: token });
@@ -23,28 +19,36 @@
       });
 
       socket.on('state-update', function(data) {
-        var me = data.autobots.filter(function(autobot) {
-          return autobot.id === currentId;
+        var me = data.autobots.filter(function(bot) {
+          return bot.id === currentId;
         })[0];
 
-        console.log(me);
+        var he = data.autobots.filter(function(bot) {
+          return bot.id !== currentId;
+        })[0];
 
-        socket.emit('send-commands', getRandomAction());
-      });
+        var action = {};
 
-      function getRandomAction() {
-        var data = {};
+        if (me.busyCount) {
+          console.log('waiting');
 
-        data.action = actions[Math.floor(Math.random() * actions.length)];
-        data.options = {};
-
-        if (data.action === 'move') {
-          data.options.direction = directions[Math.floor(Math.random() * directions.length)];
-          data.options.rotation = directions[Math.floor(Math.random() * directions.length)];
+          return;
         }
 
-        return data;
-      }
+        action.action = 'move';
+        action.options = {};
+        action.options.rotation = me.position.y > he.position.y ? 'down' : 'up';
+        action.options.direction = me.position.x > he.position.x ? 'left' : 'right';
+
+        if (me.position.x === he.position.x && me.direction === action.options.rotation) {
+          socket.emit('send-commands', { action: 'fire'});
+          console.log('fire');
+
+          return;
+        }
+
+        socket.emit('send-commands', action);
+      });
     })();
     
   </script>
