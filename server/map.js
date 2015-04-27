@@ -125,7 +125,7 @@ function getAsArray(collection) {
   return Object.keys(collection).map(function(slug) {
     return collection[slug];
   }).sort(function(a, b) {
-    return a.id > b.id;
+    return a.id < b.id;
   });
 }
 
