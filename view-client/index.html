@@ -230,7 +230,8 @@
       .player {
         height: calc(100% - 4px);
         position: absolute;
-        transition-property: left, top;
+        /*transition-property: left, top;*/
+        transition-property: all;
         transition-duration: .5s;
         font-size: 0;
         width: calc(100% - 4px);
@@ -245,8 +246,7 @@
         height: 10%
         width: 10%;
         position: absolute;
-        transition-property: left, top;
-        transition-duration: .5s;
+        transition: all .5s linear;
         margin: 45% 0 0 45%;
 
         transform-origin: 50% 50% 0px;
