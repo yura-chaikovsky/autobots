@@ -75,8 +75,8 @@ Map.prototype.getItem = function(position) {
   }
 
   return this._cache[Wall.TYPE][slug]
-    || this._cache[Autobot.TYPE][slug]
     || this._cache[Bullet.TYPE][slug]
+    || this._cache[Autobot.TYPE][slug]
     || Map.EMPTY;
 };
 

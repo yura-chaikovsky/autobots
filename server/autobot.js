@@ -5,6 +5,8 @@ var counter = 0;
 function Autobot(options) {
   this.type= Autobot.TYPE;
   this.id = Autobot.TYPE + '#' + counter;
+  this._actionTimer = 0;
+
   ++counter;
 
   this.name = options.name;

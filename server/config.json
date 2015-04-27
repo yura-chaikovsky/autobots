@@ -1,13 +1,18 @@
 {
   "game": {
-    "tick": 500
+    "tick": 200
   },
   "map": {
     "width": 11,
     "height": 11
   },
   "autobot": {
-    "health": 5
+    "health": 5,
+    "fireDuration": 2,
+    "moveDuration": 2
+  },
+  "bullet": {
+    "moveDuration": 1
   },
   "wall": {
     "health": 2

@@ -1,8 +1,12 @@
+var config = require('./config.json');
+
 var counter = 0;
 
 function Bullet(options) {
   this.type = Bullet.TYPE;
   this.id = Bullet.TYPE + '#' + counter;
+  this._actionTimer = 0;
+
   ++counter;
 
   this.health = 1;
@@ -10,6 +14,7 @@ function Bullet(options) {
 }
 
 Bullet.TYPE = 'bullet';
+Bullet.moveDuration = config.bullet.moveDuration;
 
 Bullet.prototype.hit = function() {
   this.health = 0;

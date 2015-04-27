@@ -108,7 +108,6 @@ function Game(app, options) {
     }, game);
 
     map.add(bullet, autobot.position.clone());
-    moveBullet(bullet);
   };
 
 
@@ -116,11 +115,29 @@ function Game(app, options) {
 
   function playTact() {
     map.getBullets().forEach(function(bullet) {
+      --bullet._actionTimer;
+
+      if (bullet._actionTimer > 0) {
+        return;
+      }
+
+      bullet._actionTimer = Bullet.moveDuration;
+
       moveBullet(bullet);
     });
 
     players.forEach(function(player) {
-      var action = player.getCurrentAction();
+      var action;
+
+      --player.autobot._actionTimer;
+
+      if (player.autobot._actionTimer > 0) {
+        return;
+      }
+
+      action = player.getCurrentAction();
+
+      player.autobot._actionTimer = action.duration;
 
       action.execute();
     });
@@ -130,9 +147,10 @@ function Game(app, options) {
     var newPosition = bullet.position.getSibling(bullet.direction);
     var mapItem = map.getItem(newPosition);
 
+    map.move(bullet, newPosition);
+
     switch (mapItem.type) {
       case Map.EMPTY.type:
-        map.move(bullet, newPosition);
         return;
 
       case Map.OUTSIDE.type:

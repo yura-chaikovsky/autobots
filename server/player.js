@@ -1,8 +1,10 @@
+var config = require('./config.json');
 var ACTIONS = {
   move: function(player, options) {
     return {
       _name: 'move',
       _options: options,
+      duration: config.autobot.moveDuration,
       execute: function() {
         player._game.doAutobotMove(player.autobot, options);
       }
@@ -12,6 +14,7 @@ var ACTIONS = {
     return {
       _name: 'fire',
       _options: options,
+      duration: config.autobot.fireDuration,
       execute: function() {
         player._game.doAutobotFire(player.autobot, options)
       }
@@ -21,6 +24,7 @@ var ACTIONS = {
     return {
       _name: 'wait',
       _options: options,
+      duration: 0,
       execute: function() {}
     };
   }
