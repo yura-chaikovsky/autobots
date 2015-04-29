@@ -93,7 +93,7 @@ function Combat(game, options) {
   this.doAutobotFire = function(autobot, options) {
     var bullet = new Bullet({
       direction: autobot.direction
-    }, _this);
+    });
 
     map.add(bullet, autobot.position.clone());
 

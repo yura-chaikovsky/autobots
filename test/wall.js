@@ -1,10 +1,10 @@
-var assert = require('chai').assert;
+var expect = require('chai').expect;
 var Wall = require('../server/wall');
 
-describe('Wall', function() {
+describe('Combat', function() {
   it('should create a wall', function() {
     var wall = new Wall();
 
-    assert.equal('wall', wall.type);
+    expect(wall.type).equal('wall');
   });
 });

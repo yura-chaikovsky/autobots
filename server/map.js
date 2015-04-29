@@ -58,7 +58,7 @@ Map.prototype.remove = function(item) {
 Map.prototype.isOnMap = function(position) {
   var row = this._initialField[position.y];
 
-  return row && row[position.x];
+  return !!(row && row[position.x]);
 };
 
 Map.prototype.getItem = function(position) {
