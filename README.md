@@ -10,7 +10,8 @@
 
 1. Connect some bots to the game (open in browser demo bots `ironhide.html` and `optimus.html`
 2. Open `localhost:8000` in your browser
-3. Press **start**
+3. Select at least 2 players in the list
+4. Press **start**
  
 ## Config
 
@@ -24,7 +25,7 @@ We use http://socket.io/ as a transport
 
 `'join-game'` - requires `{ token: * }` you private token (currently just a name)
   
-  You should enter the game before it has started. Server will fire `'registration'` event with ID of your bot
+  You should enter the game before it has started. Server will fire `'registration'` event
     
 `'send-commands'` - allows you to send one of the next commands to your bot
 
@@ -38,9 +39,9 @@ We use http://socket.io/ as a transport
     
 ### output
 
-`'registration'` - once after each `'join-game'` request, returns `{ id: * }` string id of your bot
+`'registration'` - once after each `'join-game'` request, returns `{ playerId: * }` string
 
-  Sends you ID of your bot after `join-game`
+  Sends you `playerId` to track your bot by. `bot.playerId === playerId`
 
 `'state-update'` - each turn after game start
 
@@ -54,7 +55,8 @@ We use http://socket.io/ as a transport
   "turn": 157,  // current turn number
   "autobots": [ // array of bots in the game
     {
-      "id": "autobot#0",  
+      "id": "autobot#0",
+      "playerId": "player#0",
       "name": "ironhide",
       "direction": "down",  // **down** means to reduce `Y` coordinate
       "health": 5,          // `0` means bot is dead
