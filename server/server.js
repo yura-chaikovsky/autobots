@@ -3,13 +3,12 @@ var server = require('http').Server(handler);
 var io = require('socket.io')(server);
 var path = require('path');
 
-var app = require('./app.js');
+var Game = require('./game.js');
 var config = require('./config.json');
-
 
 var PORT = 8000;
 
-app.initialize(io, config);
+var game = new Game(io, config);
 
 console.log('listening on *:' + PORT);
 server.listen(PORT);

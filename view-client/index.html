@@ -5,16 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Telenor Game</title>
     <meta name="description" content="Telenor Game">
-    <link rel="stylesheet" href="styles/style.css"/>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
     <script>
       var socket = io();
-
-      socket.on('next-turn', function(data) {
-        console.log('Turn ' + data.turn);
-      });
     </script>
-    <script src="http://fb.me/react-0.13.2.min.js"></script>
+    <script src="http://fb.me/react-0.13.2.js"></script>
     <script src="http://fb.me/JSXTransformer-0.13.2.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 
@@ -177,14 +172,7 @@
     </div>
 
     <div id="second--container">
-      <ul class="menu">
-        <li><a href="#start">Start</a></li>
-        <li><a href="#stop">Stop</a></li>
-        <li class="active"><a href="#single-player-game">Single Player</a></li>
-        <li><a href="#multi-player-game">Multi Players</a></li>
-        <li><a href="#settings">Settings</a></li>
-        <li><a href="#about-us">About us</a></li>
-      </ul>
+      <div id="players-list" style="color: #fff;"></div>
       <div id="game-app"></div>
     </div>
 
@@ -290,7 +278,7 @@
         render: function() {
           return (
             <h2 className='turn'>
-              Current turn: <span id='turn-number'>{this.props.turn}</span>
+              Current turn: <span>{this.props.turn}</span>
             </h2>
           );
         }
@@ -398,19 +386,75 @@
         }
       });
 
+      var PlayerList = React.createClass({
+        getInitialState: function() {
+          socket.on('players-update', this.setState.bind(this));
+          socket.emit('get-players', {});
+
+          return {
+            players: []
+          };
+        },
+        render: function() {
+          var players = {};
+
+          this.state.players.forEach(function(player) {
+            players[player.id] = <Player player={player} />;
+          }, this);
+
+          return (
+            <div>
+              <span>Please select at least 2 players</span>
+              <ul class="player-list">Joined players:
+                {players}
+              </ul>
+              <StartButton started={false} />
+            </div>
+          );
+        }
+      });
+
+      var Player = React.createClass({
+        render: function() {
+          var player = this.props.player;
+
+          return (
+            <li><input type="checkbox" value={player.id}/>{player.name}</li>
+          );
+        }
+      });
+
+      var StartButton = React.createClass({
+        getInitialState: function() {
+          return { started: false };
+        },
+        handleClick: function(event) {
+          var playerIds = $('#players-list').find(':checked').get().map(function(element) {
+            return element.value;
+          });
+
+          socket.emit('start-combat', {
+            playerIds: playerIds
+          });
+        },
+        render: function() {
+          var text = this.state.started ? 'Stop combat' : 'Start combat';
+
+          return (
+            <button onClick={this.handleClick}>{text}</button>
+          );
+        }
+      });
+
       React.render(
         <BattlefieldContainer />,
         document.getElementById('game-app')
       );
-    </script>
 
-    <script>
-      $('.menu').on('click', 'li>a', function() {
-        var selectedOption = $(this).attr('href');
-
-        console.log('You have selected ' + selectedOption);
-        socket.emit('menu-action', selectedOption);
-      });
+      React.render(
+        <PlayerList />,
+        document.getElementById('players-list')
+      );
     </script>
   </body>
 </html>

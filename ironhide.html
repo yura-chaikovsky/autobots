@@ -15,16 +15,16 @@
       socket.emit('join-game', { token: token });
 
       socket.on('registration', function(data) {
-        currentId = data.id;
+        currentId = data.playerId;
       });
 
       socket.on('state-update', function(data) {
         var me = data.autobots.filter(function(bot) {
-          return bot.id === currentId;
+          return bot.playerId === currentId;
         })[0];
 
         var he = data.autobots.filter(function(bot) {
-          return bot.id !== currentId;
+          return bot.playerId !== currentId;
         })[0];
 
         var action = {};

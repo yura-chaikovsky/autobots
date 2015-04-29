@@ -1,71 +1,61 @@
+var ACTIONS = require('./actions');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
 var Wall = require('./wall');
 var Map = require('./map');
-var Player = require('./player');
 
-function Game(app, options) {
-  var game = this;
-  var players = [];
+function Combat(game, options) {
+  var _this = this;
   var map = options.map;
+  var players = options.players;
   var currentTurn = 0;
-  var started = false;
   var timer;
 
-  if (!map) {
-    throw new Error('Map is required!')
-  }
+
+  players.forEach(function(player) {
+    player.autobot = new Autobot({
+      playerId: player.id,
+      name: player.name,
+      direction: 'right'
+    });
+
+    map.add(player.autobot, map.getStartPosition());
+  });
 
   // manage the game
 
   this.start = function() {
-    started = true;
-
     timer = setInterval(function() {
       ++currentTurn;
       console.log('Current turn: ' + currentTurn);
 
       playTact();
-      app.broadcastGameState(game);
+      game.broadcastCombatState(_this);
 
       if (map.getBots().length < 2) {
-        game.stop();
+        _this.stop();
       }
-    }, options.tick);
-  };
-
-  this.join = function(token) {
-    var player = this.getPlayer(token);
-
-    if (player) {
-      return;
-    }
-
-    player = new Player(token, game);
-    players.push(player);
-
-    // direction should be random
-    player.autobot = new Autobot({
-      name: token,
-      direction: 'right'
-    });
-
-    map.add(player.autobot, map.getStartPosition());
-  };
-
-  this.getPlayer = function(token) {
-    return players.filter(function(player) {
-      return player.token === token;
-    })[0];
+    }, options.config.tick);
   };
 
   this.stop = function() {
     clearInterval(timer);
-    started = false;
+
+    players.forEach(function(player) {
+      player.autobot = null;
+    });
+
+    game.finishCombat(this);
   };
 
-  this.isStarted = function() {
-    return started;
+  this.addAction = function(player, actionName, actionData) {
+    var action = ACTIONS[Autobot.TYPE][actionName];
+
+    if (!action) {
+      return;
+    }
+
+    player.autobot.addAction(action(this, player.autobot, actionData))
   };
 
   this.getState = function() {
@@ -81,14 +71,12 @@ function Game(app, options) {
     }
   };
 
-
   this.getView = function() {
-    return {
-      turn: currentTurn,
-      autobots: map.getBots(),
-      bullets: map.getBullets(),
-      map: map.getField()
-    };
+    var state = this.getState();
+
+    state.map = map.getField();
+
+    return state;
   };
 
   
@@ -105,49 +93,20 @@ function Game(app, options) {
   this.doAutobotFire = function(autobot, options) {
     var bullet = new Bullet({
       direction: autobot.direction
-    }, game);
+    }, _this);
 
     map.add(bullet, autobot.position.clone());
+
+    bullet.addAction(ACTIONS[Bullet.TYPE].move(_this, bullet));
   };
 
-
-  // helpers
-
-  function playTact() {
-    map.getBullets().forEach(function(bullet) {
-      --bullet.busyCount;
-
-      if (bullet.busyCount > 0) {
-        return;
-      }
-
-      bullet.busyCount = Bullet.moveDuration;
-
-      moveBullet(bullet);
-    });
-
-    players.forEach(function(player) {
-      var action;
-
-      --player.autobot.busyCount;
-
-      if (player.autobot.busyCount > 0) {
-        return;
-      }
-
-      action = player.getCurrentAction();
-
-      player.autobot.busyCount = action.duration;
-
-      action.execute();
-    });
-  }
-
-  function moveBullet(bullet) {
+  this.doBulletMove = function(bullet) {
     var newPosition = bullet.position.getSibling(bullet.direction);
     var mapItem = map.getItem(newPosition);
 
     map.move(bullet, newPosition);
+
+    bullet.addAction(ACTIONS[Bullet.TYPE].move(_this, bullet));
 
     switch (mapItem.type) {
       case Map.EMPTY.type:
@@ -159,6 +118,19 @@ function Game(app, options) {
     }
 
     doHit(mapItem, bullet);
+  };
+
+
+  // helpers
+
+  function playTact() {
+    map.getBullets().forEach(function(bullet) {
+      bullet.act();
+    });
+
+    map.getBots().forEach(function(bot) {
+      bot.act();
+    });
   }
 
   function moveBot(bot, direction) {
@@ -197,4 +169,4 @@ function Game(app, options) {
   }
 }
 
-module.exports = Game;
+module.exports = Combat;
