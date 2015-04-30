@@ -1,0 +1,33 @@
+.container {
+    border: solid 2px #008;
+    padding: 5px;
+}
+
+.row {
+    text-align: center;
+}
+
+.half {
+    display: inline-block;
+    width: 49%;
+}
+
+.player {
+    border: solid 1px #000;
+    width: 90%;
+    max-width: 150px;
+    display: inline-block;
+}
+
+.line {
+    width: 0px;
+    border: solid 1px #000;
+    display: inline-block;
+}
+
+.brace {
+    width: 49%;
+    border: solid 1px #000;
+    border-bottom: 0;
+    display: inline-block;
+}
