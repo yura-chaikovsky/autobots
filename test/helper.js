@@ -2,7 +2,7 @@
 
 var sinon = require('sinon');
 
-var defaultField = require('./data/field');
+var defaultField = require('./data/field-small');
 
 var Position = require('../server/position');
 var Autobot = require('../server/autobot');

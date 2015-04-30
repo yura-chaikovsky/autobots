@@ -13,30 +13,32 @@ function Combat(game, options) {
   var currentTurn = 0;
   var timer;
 
-
-  players.forEach(function(player) {
-    player.autobot = new Autobot({
-      playerId: player.id,
-      name: player.name,
-      direction: 'right'
-    });
-
-    map.add(player.autobot, map.getStartPosition());
-  });
-
   // manage the game
 
   this.start = function() {
+    players.forEach(function(player) {
+      player.autobot = new Autobot({
+        playerId: player.id,
+        name: player.name,
+        direction: 'right'
+      });
+
+      map.add(player.autobot, map.getStartPosition());
+    });
+
+    game.broadcastCombatState(_this);
+
     timer = setInterval(function() {
+      if (map.getBots().length < 2) {
+        _this.stop();
+      }
+
       ++currentTurn;
       console.log('Current turn: ' + currentTurn);
 
       playTact();
-      game.broadcastCombatState(_this);
 
-      if (map.getBots().length < 2) {
-        _this.stop();
-      }
+      game.broadcastCombatState(_this);
     }, options.config.tick);
   };
 

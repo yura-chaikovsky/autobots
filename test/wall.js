@@ -3,7 +3,7 @@
 var expect = require('chai').expect;
 var Wall = require('../server/wall');
 
-describe('Combat', function() {
+describe('Wall', function() {
   it('should create a wall', function() {
     var wall = new Wall();
 
