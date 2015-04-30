@@ -1,4 +1,4 @@
-var config = require('./config.json');
+'use strict';
 
 var counter = 0;
 

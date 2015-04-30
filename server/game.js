@@ -1,3 +1,5 @@
+'use strict';
+
 var mapGenerator = require('./map-generator');
 var Combat = require('./combat');
 var Player = require('./player');

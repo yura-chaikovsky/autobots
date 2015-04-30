@@ -1,3 +1,5 @@
+'use strict';
+
 var fs = require('fs');
 var server = require('http').Server(handler);
 var io = require('socket.io')(server);

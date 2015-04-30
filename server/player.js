@@ -1,3 +1,5 @@
+'use strict';
+
 var counter = 0;
 
 function Player(token) {

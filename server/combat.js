@@ -1,3 +1,5 @@
+'use strict';
+
 var ACTIONS = require('./actions');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
@@ -93,7 +95,7 @@ function Combat(game, options) {
   this.doAutobotFire = function(autobot, options) {
     var bullet = new Bullet({
       direction: autobot.direction
-    }, _this);
+    });
 
     map.add(bullet, autobot.position.clone());
 
