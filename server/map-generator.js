@@ -1,3 +1,5 @@
+'use strict';
+
 var Map = require('./map');
 var generator = require('./labyrinth/index.js');
 

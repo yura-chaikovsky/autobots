@@ -1,3 +1,5 @@
+'use strict';
+
 var config = require('./config.json');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');

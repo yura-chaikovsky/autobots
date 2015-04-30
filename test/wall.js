@@ -1,3 +1,5 @@
+'use strict';
+
 var expect = require('chai').expect;
 var Wall = require('../server/wall');
 

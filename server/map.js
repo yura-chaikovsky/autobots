@@ -1,3 +1,5 @@
+'use strict';
+
 var Position = require('./position');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');

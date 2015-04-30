@@ -1,3 +1,5 @@
+'use strict';
+
 var ACTIONS = require('./actions');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
