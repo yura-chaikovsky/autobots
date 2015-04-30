@@ -1,5 +1,7 @@
 'use strict';
 
+var config = require('../server/config.json');
+
 var expect = require('chai').expect;
 var sinon = require('sinon');
 var helper = require('./helper');
@@ -7,6 +9,7 @@ var helper = require('./helper');
 var Combat = require('../server/combat');
 var Player = require('../server/player');
 var Autobot = require('../server/autobot');
+var Position = require('../server/position');
 var Wall = require('../server/wall');
 
 describe('Combat', function() {
@@ -68,10 +71,12 @@ describe('Combat', function() {
       expect(player1.autobot).instanceOf(Autobot);
       expect(player1.autobot.position.x).equal(2);
       expect(player1.autobot.position.y).equal(0);
+      expect(player1.autobot.direction).equal('right');
 
       expect(player2.autobot).instanceOf(Autobot);
       expect(player2.autobot.position.x).equal(2);
       expect(player2.autobot.position.y).equal(4);
+      expect(player2.autobot.direction).equal('right');
     });
 
     it('should send state each tick', function() {
@@ -105,4 +110,135 @@ describe('Combat', function() {
       expect(player2.autobot).equal(null);
     });
   });
+
+  describe('Actions', function() {
+    beforeEach(function() {
+      combat.start();
+    });
+
+    afterEach(function() {
+      combat.stop();
+    });
+    
+    it('should apply action at once', function() {
+      combat.addAction(player1, 'move', { direction: 'up' });
+
+      clock.tick(250);
+      
+      expect(player1.autobot.position.y).equal(1);
+    });
+
+    describe('Autobot move', function() {
+      it('should rotate bot', function() {
+        combat.addAction(player1, 'move', { rotation: 'left' });
+
+        clock.tick(250);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('left');
+      });
+
+      it('should move bot to empty cell', function() {
+        combat.addAction(player1, 'move', { direction: 'left' });
+
+        clock.tick(250);
+
+        expect(player1.autobot.position.x).equal(1);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('left');
+      });
+
+      it('should continue act only after cooldown', function() {
+        combat.addAction(player1, 'move', { rotation: 'up' });
+        combat.addAction(player1, 'move', { rotation: 'right' });
+        combat.addAction(player1, 'move', { direction: 'left' });
+
+        clock.tick(250);
+
+        expect(player1.autobot.direction).equal('up');
+
+        clock.tick(200);
+
+        expect(player1.autobot.direction).equal('up');
+
+        clock.tick(200);
+
+        expect(player1.autobot.direction).equal('right');
+
+        clock.tick(200);
+
+        expect(player1.autobot.direction).equal('right');
+
+        clock.tick(200);
+
+        expect(player1.autobot.direction).equal('left');
+      });
+
+      it('should move bot with custom rotation', function() {
+        combat.addAction(player1, 'move', { direction: 'left', rotation: 'right' });
+        combat.addAction(player1, 'move', { direction: 'up', rotation: 'left' });
+        combat.addAction(player1, 'move', { direction: 'right', rotation: 'down' });
+        combat.addAction(player1, 'move', { direction: 'down', rotation: 'up' });
+
+        clock.tick(250);
+
+        expect(player1.autobot.position.x).equal(1);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('right');
+
+        clock.tick(400);
+
+        expect(player1.autobot.position.x).equal(1);
+        expect(player1.autobot.position.y).equal(1);
+        expect(player1.autobot.direction).equal('left');
+
+        clock.tick(400);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(1);
+        expect(player1.autobot.direction).equal('down');
+
+        clock.tick(400);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('up');
+      });
+
+      it('should not move player to an obstacle', function() {
+        combat.addAction(player1, 'move', { direction: 'down' });
+        combat.addAction(player1, 'move', { direction: 'right' });
+        combat.addAction(player1, 'move', { direction: 'up' });
+
+        clock.tick(250);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('down');
+
+        clock.tick(400);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('right');
+
+        map.move(player2.autobot, new Position(2, 1));
+
+        clock.tick(400);
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('up');
+      });
+    });
+    
+    describe('Autobot fire', function() {
+      it('should ', function() {
+        
+        
+      });
+    });
+  });
+  
 });
