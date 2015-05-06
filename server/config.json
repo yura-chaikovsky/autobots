@@ -1,5 +1,5 @@
 {
-  "game": {
+  "combat": {
     "tick": 200
   },
   "map": {
@@ -8,11 +8,16 @@
   },
   "autobot": {
     "health": 5,
-    "fireDuration": 2,
-    "moveDuration": 2
+    "duration": {
+      "move": 2,
+      "rotate": 3,
+      "fire": 3
+    }
   },
   "bullet": {
-    "moveDuration": 1
+    "duration": {
+      "move": 1
+    }
   },
   "wall": {
     "health": 2

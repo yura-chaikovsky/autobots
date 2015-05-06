@@ -1,23 +1,24 @@
 'use strict';
 
-var ACTIONS = require('./actions');
 var Autobot = require('./autobot');
 var Bullet = require('./bullet');
 var Wall = require('./wall');
 var Map = require('./map');
 
-function Combat(game, options) {
+function Combat(config, options) {
   var _this = this;
+
   var map = options.map;
   var players = options.players;
   var currentTurn = 0;
   var timer;
 
+
   // manage the game
 
   this.start = function() {
     players.forEach(function(player) {
-      player.autobot = new Autobot({
+      player.autobot = new Autobot(options.autobotConfig, {
         playerId: player.id,
         name: player.name,
         direction: 'right'
@@ -26,7 +27,7 @@ function Combat(game, options) {
       map.add(player.autobot, map.getStartPosition());
     });
 
-    game.broadcastCombatState(_this);
+    options.game.broadcastCombatState(_this);
 
     timer = setInterval(function() {
       if (map.getBots().length < 2) {
@@ -38,8 +39,8 @@ function Combat(game, options) {
 
       playTact();
 
-      game.broadcastCombatState(_this);
-    }, options.config.tick);
+      options.game.broadcastCombatState(_this);
+    }, config.tick);
   };
 
   this.stop = function() {
@@ -49,17 +50,23 @@ function Combat(game, options) {
       player.autobot = null;
     });
 
-    game.finishCombat(this);
+    options.game.finishCombat(this);
   };
 
-  this.addAction = function(player, actionName, actionData) {
-    var action = ACTIONS[Autobot.TYPE][actionName];
+  this.addAction = function(player, actionData) {
+    var bot = player.autobot;
 
-    if (!action) {
-      return;
+    if (actionData.fire) {
+      bot.addAction('fire', executeBotFire.bind(null, bot));
     }
 
-    player.autobot.addAction(action(this, player.autobot, actionData))
+    if (actionData.move) {
+      bot.addAction('move', moveBot.bind(null, bot, actionData.move));
+    }
+
+    if (actionData.rotate) {
+      bot.addAction('rotate', rotateBot.bind(null, bot, actionData.rotate));
+    }
   };
 
   this.getState = function() {
@@ -86,48 +93,18 @@ function Combat(game, options) {
   
   // Autobot actions
   
-  this.doAutobotMove = function(bot, options) {
-    bot.direction = options.rotation || options.direction || bot.direction;
-
-    if (options.direction) {
-      moveBot(bot, options.direction);
-    }
-  };
-
-  this.doAutobotFire = function(autobot, options) {
-    var bullet = new Bullet({
-      direction: autobot.direction
-    });
-
-    map.add(bullet, autobot.position.clone());
-
-    bullet.addAction(ACTIONS[Bullet.TYPE].move(_this, bullet));
-  };
 
   this.doBulletMove = function(bullet) {
-    var newPosition = bullet.position.getSibling(bullet.direction);
-    var mapItem = map.getItem(newPosition);
+    bullet.addAction('move', this.doBulletMove.bind(this, bullet));
 
-    map.move(bullet, newPosition);
-
-    bullet.addAction(ACTIONS[Bullet.TYPE].move(_this, bullet));
-
-    switch (mapItem.type) {
-      case Map.EMPTY.type:
-        return;
-
-      case Map.OUTSIDE.type:
-        map.remove(bullet);
-        return;
-    }
-
-    doHit(mapItem, bullet);
+    moveBullet(bullet);
   };
 
 
   // helpers
 
   function playTact() {
+    // bullets are moved before bots
     map.getBullets().forEach(function(bullet) {
       bullet.act();
     });
@@ -158,7 +135,44 @@ function Combat(game, options) {
     }
   }
 
+  function rotateBot(bot, rotation) {
+    bot.direction = rotation;
+  }
+
+  function executeBotFire(bot) {
+    var bullet = new Bullet(options.bulletConfig, {
+      direction: bot.direction,
+      ownerId: bot.id
+    });
+
+    map.add(bullet, bot.position.clone());
+
+    bullet.addAction('move', _this.doBulletMove.bind(_this, bullet));
+  }
+
+  function moveBullet(bullet) {
+    var newPosition = bullet.position.getSibling(bullet.direction);
+    var mapItem = map.getItem(newPosition);
+
+    map.move(bullet, newPosition);
+
+    switch (mapItem.type) {
+      case Map.EMPTY.type:
+        return;
+
+      case Map.OUTSIDE.type:
+        map.remove(bullet);
+        return;
+    }
+
+    doHit(mapItem, bullet);
+  }
+
   function doHit(item, bullet) {
+    if (item.type === 'autobot' && item.id === bullet.ownerId) {
+      return;
+    }
+
     item.hit();
     checkCondition(item);
 

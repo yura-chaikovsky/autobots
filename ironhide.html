@@ -28,23 +28,22 @@
         })[0];
 
         var action = {};
+        var direction = me.position.y > he.position.y ? 'down' : 'up';
 
-        if (me.busyCount) {
-          console.log('waiting');
-
-          return;
+        if (me.readyTo.rotate && direction !== me.direction) {
+          action.rotate = direction;
         }
 
-        action.action = 'move';
-        action.options = {};
-        action.options.rotation = me.position.y > he.position.y ? 'down' : 'up';
-        action.options.direction = me.position.x > he.position.x ? 'left' : 'right';
+        if (me.readyTo.move) {
+          if (me.position.x > he.position.x) {
+            action.move = 'left';
+          } else if (me.position.x < he.position.x) {
+            action.move = 'right';
+          }
+        }
 
-        if (me.position.x === he.position.x && me.direction === action.options.rotation) {
-          socket.emit('send-commands', { action: 'fire'});
-          console.log('fire');
-
-          return;
+        if (me.readyTo.fire && me.position.x === he.position.x && me.direction === direction) {
+          action.fire = true;
         }
 
         socket.emit('send-commands', action);

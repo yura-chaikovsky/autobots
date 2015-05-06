@@ -229,7 +229,7 @@
         transform: rotate(0deg);
       }
 
-      .bullet-item {
+      .bullet {
         background-color: #FF0000;
         height: 10%
         width: 10%;
@@ -239,6 +239,22 @@
 
         transform-origin: 50% 50% 0px;
         transform: rotate(0deg);
+      }
+
+      .bullet.right {
+        margin-left: 90%;
+      }
+
+      .bullet.left {
+        margin-left: 0%;
+      }
+
+      .bullet.up {
+        margin-top: 90%;
+      }
+
+      .bullet.down {
+        margin-top: 0%;
       }
 
       .ironhide {
@@ -340,7 +356,7 @@
             top: this.props.bullet.position.y * 100 + '%'
           };
 
-          var classString = 'bullet-item ' + this.props.bullet.direction;
+          var classString = 'bullet ' + this.props.bullet.direction;
 
           return (
             <div className={classString} style={position}>*</div>

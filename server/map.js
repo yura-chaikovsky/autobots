@@ -14,21 +14,21 @@ var WALL_SYMBOL = '1';
  * @param field
  * @constructor
  */
-function Map(field) {
-  this._initialField = field;
+function Map(config, options) {
+  this._labyrinth = options.labyrinth;
 
-  this.height = field.length;
-  this.width = field[0].length;
+  this.height = options.labyrinth.length;
+  this.width = options.labyrinth[0].length;
 
   this._cache = {};
   this._cache[Autobot.TYPE] = {};
   this._cache[Bullet.TYPE] = {};
   this._cache[Wall.TYPE] = {};
 
-  field.forEach(function(row, y) {
+  options.labyrinth.forEach(function(row, y) {
     row.forEach(function(cell, x) {
       if (cell === WALL_SYMBOL) {
-        this.add(new Wall(this), new Position(x, y));
+        this.add(new Wall(options.wallConfig), new Position(x, y));
       }
     }, this);
   }, this);
@@ -105,7 +105,7 @@ Map.prototype.remove = function(item) {
  * @returns {boolean}
  */
 Map.prototype.isOnMap = function(position) {
-  var row = this._initialField[position.y];
+  var row = this._labyrinth[position.y];
 
   return !!(row && row[position.x]);
 };
@@ -162,7 +162,7 @@ Map.prototype.isExist = function(item) {
  * @returns {Array[]}
  */
 Map.prototype.getField = function() {
-  return this._initialField.map(function(row, y) {
+  return this._labyrinth.map(function(row, y) {
     return row.map(function(cell, x) {
       return this._cache[Wall.TYPE][Position.generateSlug(x, y)];
     }, this);
@@ -228,7 +228,7 @@ function getAsArray(collection) {
   return Object.keys(collection).map(function(slug) {
     return collection[slug];
   }).sort(function(a, b) {
-    return a.id < b.id;
+    return a.id > b.id;
   });
 }
 

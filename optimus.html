@@ -10,10 +10,7 @@
     (function() {
       var socket = io('http://localhost:8000');
       var token = 'optimus-prime';
-
       var directions = ['up', 'down', 'right', 'left'];
-      var actions = ['move', 'fire'];
-
       var currentId;
 
       socket.emit('join-game', { token: token });
@@ -23,27 +20,36 @@
       });
 
       socket.on('state-update', function(data) {
-        var me = data.autobots.filter(function(autobot) {
-          return autobot.id === currentId;
-        })[0];
 
-        console.log(me);
-
-        socket.emit('send-commands', getRandomAction());
+        socket.emit('send-commands', { move: 'right', rotate: 'up', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'right', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+        socket.emit('send-commands', { move: 'left', fire: true });
+//        socket.emit('send-commands', getRandomAction());
       });
 
       function getRandomAction() {
-        var data = {};
-
-        data.action = actions[Math.floor(Math.random() * actions.length)];
-        data.options = {};
-
-        if (data.action === 'move') {
-          data.options.direction = directions[Math.floor(Math.random() * directions.length)];
-          data.options.rotation = directions[Math.floor(Math.random() * directions.length)];
-        }
-
-        return data;
+        return {
+          move: directions[Math.floor(Math.random() * directions.length)],
+          rotate: directions[Math.floor(Math.random() * directions.length)],
+          fire: true
+        };
       }
     })();
   </script>

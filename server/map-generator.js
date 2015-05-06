@@ -1,10 +1,13 @@
 'use strict';
 
 var Map = require('./map');
-var generator = require('./labyrinth/index.js');
+var labyrinthGenerator = require('./labyrinth/index.js');
 
 module.exports = {
-  generate: function(options) {
-    return new Map(generator.generateLabyrinth(options.height, options.width));
+  generate: function(config) {
+    return new Map(config.map, {
+      wallConfig: config.wall,
+      labyrinth: labyrinthGenerator.generateLabyrinth(config.map.height, config.map.width)
+    });
   }
 };

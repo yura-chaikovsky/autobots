@@ -1,45 +1,60 @@
 'use strict';
 
-var config = require('./config.json');
-
 var counter = 0;
 
-function Autobot(options) {
+function Autobot(config, options) {
   this.type= Autobot.TYPE;
   this.id = Autobot.TYPE + '#' + counter;
 
   ++counter;
 
+  this._config = config;
   this.playerId = options.playerId;
   this.name = options.name;
   this.direction = options.direction;
   this.position = null;
 
-  this.health = config.autobot.health;
+  this.health = config.health;
 
-  this.busyCount = 0;
-  this._actionsQueue = [];
+  this._actions = {
+    move: [],
+    rotate: [],
+    fire: []
+  };
 }
+
+function doNothing() {}
 
 Autobot.TYPE = 'autobot';
 
-Autobot.prototype.addAction = function(action) {
-  this._actionsQueue.push(action);
+Autobot.prototype.addAction = function(type, action) {
+  var queue = this._actions[type];
+  var count = this._config.duration[type] - 1;
+
+  queue.push(action);
+
+  for (; count > 0; --count) {
+    queue.push(doNothing);
+  }
 };
 
 Autobot.prototype.act = function() {
-  var action = this._actionsQueue[0];
+  var move = this._actions.move.shift();
+  var rotate = this._actions.rotate.shift();
+  var fire = this._actions.fire.shift();
 
-  --this.busyCount;
-
-  if (!action || this.busyCount > 0 ) {
-    return;
+  // The order is important because bullet is placed differently
+  if (fire) {
+    fire();
   }
 
-  this._actionsQueue.shift();
-  this.busyCount = action.duration;
+  if (move) {
+    move();
+  }
 
-  action.execute();
+  if (rotate) {
+    rotate();
+  }
 };
 
 Autobot.prototype.hit = function() {
@@ -56,7 +71,11 @@ Autobot.prototype.getState = function() {
     direction: this.direction,
     health: this.health,
     position: this.position.normalize(),
-    busyCount: this.busyCount > 0 ? this.busyCount : 0
+    readyTo: {
+      move: !this._actions.move[0],
+      rotate: !this._actions.rotate[0],
+      fire: !this._actions.fire[0]
+    }
   };
 };
 
