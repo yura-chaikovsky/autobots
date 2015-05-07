@@ -32,8 +32,7 @@ describe('Combat', function() {
 
     combatOptions.map = map;
     combatOptions.players = [player1, player2];
-    combatOptions.autobotConfig = config.autobot;
-    combatOptions.bulletConfig = config.bullet;
+    combatOptions.globalConfig = config;
     combatOptions.game = game;
 
 
@@ -122,6 +121,7 @@ describe('Combat', function() {
         combat.addAction(player1, { rotate: 'left' });
 
         helper.timer.nextTurn();
+        helper.timer.nextTurn();
 
         expect(player1.autobot.position.x).equal(2);
         expect(player1.autobot.position.y).equal(0);
@@ -132,29 +132,37 @@ describe('Combat', function() {
         combat.addAction(player1, { move: 'left' });
 
         helper.timer.nextTurn();
+        helper.timer.nextTurn();
+        helper.timer.nextTurn();
 
         expect(player1.autobot.position.x).equal(1);
         expect(player1.autobot.position.y).equal(0);
       });
 
-      it('should move only when ready', function() {
+      it('should move at the configured moment', function() {
         combat.addAction(player1, { move: 'up'});
         combat.addAction(player1, { move: 'right'});
 
         helper.timer.nextTurn();
 
-        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+
+        helper.timer.nextTurn();
+
+        expect(player1.autobot.position.y).equal(0);
+
+        helper.timer.nextTurn();
+
         expect(player1.autobot.position.y).equal(1);
+        expect(player1.autobot.position.x).equal(2);
 
         helper.timer.nextTurn();
 
         expect(player1.autobot.position.x).equal(2);
-        expect(player1.autobot.position.y).equal(1);
 
         helper.timer.nextTurn();
 
         expect(player1.autobot.position.x).equal(3);
-        expect(player1.autobot.position.y).equal(1);
       });
 
       it('should not move player to an obstacle', function() {
@@ -181,37 +189,25 @@ describe('Combat', function() {
       });
 
       it('should move and rotate', function() {
-        combat.addAction(player1, { move: 'left', rotate: 'right' });
+        combat.addAction(player1, { move: 'left', rotate: 'left' });
+
+        helper.timer.nextTurn();
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('right');
+
+        helper.timer.nextTurn();
+
+        expect(player1.autobot.position.x).equal(2);
+        expect(player1.autobot.position.y).equal(0);
+        expect(player1.autobot.direction).equal('left');
 
         helper.timer.nextTurn();
 
         expect(player1.autobot.position.x).equal(1);
         expect(player1.autobot.position.y).equal(0);
-        expect(player1.autobot.direction).equal('right');
-
-        combat.addAction(player1, { move: 'up', rotate: 'left' });
-
-        helper.timer.tick(2);
-
-        expect(player1.autobot.position.x).equal(1);
-        expect(player1.autobot.position.y).equal(1);
         expect(player1.autobot.direction).equal('left');
-
-        combat.addAction(player1, { move: 'right', rotate: 'down' });
-
-        helper.timer.tick(2);
-
-        expect(player1.autobot.position.x).equal(2);
-        expect(player1.autobot.position.y).equal(1);
-        expect(player1.autobot.direction).equal('down');
-
-        combat.addAction(player1, { move: 'down', rotate: 'up' });
-
-        helper.timer.tick(2);
-
-        expect(player1.autobot.position.x).equal(2);
-        expect(player1.autobot.position.y).equal(0);
-        expect(player1.autobot.direction).equal('up');
       });
     });
     
@@ -223,7 +219,9 @@ describe('Combat', function() {
         combat.addAction(player2, { rotate: 'down' });
 
         helper.timer.nextTurn();
+        helper.timer.nextTurn();
 
+        expect(player1.autobot.direction).equal('up');
         combat.addAction(player1, { fire: true });
 
         helper.timer.nextTurn();
@@ -253,6 +251,7 @@ describe('Combat', function() {
       it('should fire only when ready', function() {
         combat.addAction(player1, { rotate: 'up' });
 
+        helper.timer.nextTurn();
         helper.timer.nextTurn();
 
         combat.addAction(player1, { fire: true });
@@ -291,6 +290,7 @@ describe('Combat', function() {
         combat.addAction(player1, { move: 'up', rotate: 'left' });
 
         helper.timer.nextTurn();
+        helper.timer.nextTurn();
 
         combat.addAction(player1, { fire: true });
 
@@ -299,7 +299,7 @@ describe('Combat', function() {
         bullets = map.getBullets();
 
         expect(bullets[0].position.x).equal(2);
-        expect(bullets[0].position.y).equal(1);
+        expect(bullets[0].position.y).equal(0);
         expect(bullets[0].direction).equal('left');
       });
     });

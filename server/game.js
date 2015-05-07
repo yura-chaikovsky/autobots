@@ -46,8 +46,7 @@ function Game(io, config) {
       }
 
       combatOptions.game = _this;
-      combatOptions.autobotConfig = config.autobot;
-      combatOptions.bulletConfig = config.bullet;
+      combatOptions.globalConfig = config;
       combatOptions.map = mapGenerator.generate(config);
 
       combatOptions.players = _this.getPlayers().filter(function(player) {

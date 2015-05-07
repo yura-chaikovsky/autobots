@@ -8,15 +8,27 @@
   },
   "autobot": {
     "health": 5,
-    "duration": {
-      "move": 2,
-      "rotate": 1,
-      "fire": 3
+    "actions": {
+      "move": {
+        "duration": 2,
+        "result": 2
+      },
+      "rotate": {
+        "duration": 1,
+        "result": 1
+      },
+      "fire": {
+        "duration": 3,
+        "result": 0
+      }
     }
   },
   "bullet": {
-    "duration": {
-      "move": 1
+    "actions": {
+      "move": {
+        "duration": 1,
+        "result": 1
+      }
     }
   },
   "wall": {

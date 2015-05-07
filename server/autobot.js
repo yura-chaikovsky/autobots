@@ -27,15 +27,25 @@ function doNothing() {}
 
 Autobot.TYPE = 'autobot';
 
-Autobot.prototype.addAction = function(type, action) {
-  var queue = this._actions[type];
-  var count = this._config.duration[type] - 1;
+Autobot.prototype.addAction = function(action) {
+  var configs = this._config.actions;
+  var actions = this._actions;
 
-  queue.push(action);
+  Object.keys(action).forEach(function(type) {
+    var step;
 
-  for (; count > 0; --count) {
-    queue.push(doNothing);
-  }
+    if (!actions[type].length) {
+      actions[type].push(doNothing);
+    }
+
+    var resultStep = actions[type].length - 1 + configs[type].result;
+
+    for (step = 0; step < configs[type].duration; ++step) {
+      actions[type].push(doNothing);
+    }
+
+    actions[type][resultStep] = action[type];
+  }, this);
 };
 
 Autobot.prototype.act = function() {
@@ -43,7 +53,6 @@ Autobot.prototype.act = function() {
   var rotate = this._actions.rotate.shift();
   var fire = this._actions.fire.shift();
 
-  // The order is important because bullet is placed differently
   if (fire) {
     fire();
   }
