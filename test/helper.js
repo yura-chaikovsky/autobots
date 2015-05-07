@@ -3,6 +3,7 @@
 var sinon = require('sinon');
 
 var defaultField = require('./data/field-small');
+var config = require('./data/config');
 
 var Position = require('../server/position');
 var Autobot = require('../server/autobot');
@@ -10,8 +11,10 @@ var Bullet = require('../server/bullet');
 var Wall = require('../server/wall');
 var Map = require('../server/map');
 
+var clock;
+
 module.exports.createBot = function(name, playerId, direction) {
-  return new Autobot({
+  return new Autobot(config.autobot, {
     name: name || 'Test bot',
     playerId: playerId || 'player#0',
     direction: direction || 'right'
@@ -19,13 +22,13 @@ module.exports.createBot = function(name, playerId, direction) {
 };
 
 module.exports.createBullet = function(direction) {
-  return new Bullet({
+  return new Bullet(config.bullet, {
     direction: direction || 'right'
   });
 };
 
 module.exports.createWall = function() {
-  return new Wall();
+  return new Wall(config.wall);
 };
 
 module.exports.createPosition = function(x, y) {
@@ -33,7 +36,10 @@ module.exports.createPosition = function(x, y) {
 };
 
 module.exports.createMap = function(field) {
-  return new Map(field || defaultField);
+  return new Map(config.map, {
+    labyrinth: field || defaultField,
+    wallConfig: config.wall
+  });
 };
 
 module.exports.createGameStub = function() {
@@ -41,4 +47,22 @@ module.exports.createGameStub = function() {
     broadcastCombatState: sinon.spy(),
     finishCombat: sinon.spy()
   };
+};
+
+module.exports.timer = {
+  initialize: function() {
+    clock = sinon.useFakeTimers();
+  },
+  start: function() {
+    clock.tick(10);
+  },
+  tick: function(numberOfTurns) {
+    clock.tick(numberOfTurns * config.combat.tick);
+  },
+  nextTurn: function() {
+    this.tick(1);
+  },
+  reset: function() {
+    clock.restore();
+  }
 };

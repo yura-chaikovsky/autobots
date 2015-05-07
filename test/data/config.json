@@ -11,7 +11,7 @@
     "duration": {
       "move": 2,
       "rotate": 1,
-      "fire": 3
+      "fire": 2
     }
   },
   "bullet": {
