@@ -80,10 +80,10 @@ Autobot.prototype.getState = function() {
     direction: this.direction,
     health: this.health,
     position: this.position.normalize(),
-    readyTo: {
-      move: !this._actions.move[0],
-      rotate: !this._actions.rotate[0],
-      fire: !this._actions.fire[0]
+    schedule: {
+      move: this._actions.move.length,
+      rotate: this._actions.rotate.length,
+      fire: this._actions.fire.length
     }
   };
 };

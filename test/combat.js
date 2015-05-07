@@ -3,7 +3,6 @@
 var config = require('./data/config');
 
 var expect = require('chai').expect;
-var sinon = require('sinon');
 var helper = require('./helper');
 
 var Combat = require('../server/combat');
@@ -304,5 +303,4 @@ describe('Combat', function() {
       });
     });
   });
-  
 });
