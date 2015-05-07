@@ -29,13 +29,13 @@ We use http://socket.io/ as a transport
     
 `'send-commands'` - allows you to send one of the next commands to your bot
 
-  `{ action: 'move', options: { direction: 'up', rotation: 'left' } }`
+  `{ move: 'up', rotate: 'left', fire: true } }`
   
-    Moves your bot in selected `direction` and turns his cannon in `rotation` direction
-    
-  `{ action: 'fire', options: {} }`
+    `move` - moves your bot in selected direction
+    `rotate` - turns cannon in selected direction
+    `fire` - initiates a shot in current direction of the cannon
   
-    Fires a bullet in current direction of your cannon
+  Any option can be ommited.
     
 ### output
 
@@ -64,7 +64,11 @@ We use http://socket.io/ as a transport
         "x": 6,
         "y": 2
       },
-      "busyCount": 2        // bot can't move for 2 next turns
+      "schedule": {
+        "move": 2,          // number of turns left to finish planned movement
+        "rotate": 1,
+        "fire": 3
+      }
     },
     ...
   ],
@@ -76,8 +80,7 @@ We use http://socket.io/ as a transport
       "position": {
         "x": 6,
         "y": 10
-      },
-      "busyCount": 0
+      }
     }
   ],
   "walls": [
