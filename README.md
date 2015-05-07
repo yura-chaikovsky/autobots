@@ -64,10 +64,10 @@ We use http://socket.io/ as a transport
         "x": 6,
         "y": 2
       },
-      "schedule": {
-        "move": 2,          // number of turns left to finish planned movement
-        "rotate": 1,
-        "fire": 3
+      "readyTo": {
+        "move": true,       // you can send new move command to the bot
+        "rotate": true,
+        "fire": false
       }
     },
     ...
