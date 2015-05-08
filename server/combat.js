@@ -39,12 +39,13 @@ function Combat(config, options) {
         _this.stop();
       }
 
-      ++currentTurn;
       console.log('Current turn: ' + currentTurn);
 
       playTact();
 
       options.game.broadcastCombatState(_this);
+
+      ++currentTurn;
     }, config.tick);
   };
 

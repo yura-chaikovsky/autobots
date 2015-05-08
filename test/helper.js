@@ -62,6 +62,16 @@ module.exports.timer = {
   nextTurn: function() {
     this.tick(1);
   },
+  waitForResult: function(action) {
+    this.tick(config.autobot.actions[action].result);
+  },
+  waitBeforeReady: function(action) {
+    this.tick(config.autobot.actions[action].duration - 1);
+  },
+  waitForReady: function(action) {
+    this.waitBeforeReady(action);
+    this.nextTurn();
+  },
   reset: function() {
     clock.restore();
   }

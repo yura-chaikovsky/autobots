@@ -17,9 +17,9 @@ function Autobot(config, options) {
   this.health = config.health;
 
   this._actions = {
-    move: [],
-    rotate: [],
-    fire: []
+    move: [doNothing],
+    rotate: [doNothing],
+    fire: [doNothing]
   };
 }
 
@@ -28,42 +28,29 @@ function doNothing() {}
 Autobot.TYPE = 'autobot';
 
 Autobot.prototype.addAction = function(action) {
-  var configs = this._config.actions;
-  var actions = this._actions;
-
   Object.keys(action).forEach(function(type) {
+    var queue = this._actions[type];
+    var config = this._config.actions[type];
+
+    var resultStep = queue.length - 1 + config.result;
     var step;
 
-    if (!actions[type].length) {
-      actions[type].push(doNothing);
+    for (step = 0; step < config.duration; ++step) {
+      queue.push(doNothing);
     }
 
-    var resultStep = actions[type].length - 1 + configs[type].result;
-
-    for (step = 0; step < configs[type].duration; ++step) {
-      actions[type].push(doNothing);
-    }
-
-    actions[type][resultStep] = action[type];
+    queue[resultStep] = action[type];
   }, this);
 };
 
 Autobot.prototype.act = function() {
-  var move = this._actions.move.shift();
-  var rotate = this._actions.rotate.shift();
-  var fire = this._actions.fire.shift();
+  this._actions.fire.shift()();
+  this._actions.move.shift()();
+  this._actions.rotate.shift()();
 
-  if (fire) {
-    fire();
-  }
-
-  if (move) {
-    move();
-  }
-
-  if (rotate) {
-    rotate();
-  }
+  this._actions.fire[0] = this._actions.fire[0] || doNothing;
+  this._actions.move[0] = this._actions.move[0] || doNothing;
+  this._actions.rotate[0] = this._actions.rotate[0] || doNothing;
 };
 
 Autobot.prototype.hit = function() {

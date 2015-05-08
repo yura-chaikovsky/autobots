@@ -15,7 +15,7 @@ function Bullet(config, options) {
   this.position = null;
 
   this._actions = {
-    move: []
+    move: [doNothing]
   };
 }
 
@@ -24,32 +24,25 @@ function doNothing() {}
 Bullet.TYPE = 'bullet';
 
 Bullet.prototype.addAction = function(action) {
-  var configs = this._config.actions;
-  var actions = this._actions;
-
   Object.keys(action).forEach(function(type) {
+    var queue = this._actions[type];
+    var config = this._config.actions[type];
+
+    var resultStep = queue.length - 1 + config.result;
     var step;
 
-    if (!actions[type].length) {
-      actions[type].push(doNothing);
+    for (step = 0; step < config.duration; ++step) {
+      queue.push(doNothing);
     }
 
-    var resultStep = actions[type].length - 1 + configs[type].result;
-
-    for (step = 0; step < configs[type].duration; ++step) {
-      actions[type].push(doNothing);
-    }
-
-    actions[type][resultStep] = action[type];
+    queue[resultStep] = action[type];
   }, this);
 };
 
 Bullet.prototype.act = function() {
-  var move = this._actions.move.shift();
+  this._actions.move[0] = this._actions.move[0] || doNothing;
 
-  if (move) {
-    move();
-  }
+  this._actions.move.shift()();
 };
 
 Bullet.prototype.hit = function() {
