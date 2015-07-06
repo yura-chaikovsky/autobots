@@ -40,9 +40,9 @@ Bullet.prototype.addAction = function(action) {
 };
 
 Bullet.prototype.act = function() {
-  this._actions.move[0] = this._actions.move[0] || doNothing;
-
   this._actions.move.shift()();
+
+  this._actions.move[0] = this._actions.move[0] || doNothing;
 };
 
 Bullet.prototype.hit = function() {

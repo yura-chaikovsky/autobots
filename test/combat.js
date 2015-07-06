@@ -56,7 +56,7 @@ describe('Combat', function() {
     expect(viewData.map[0]).length(5);
   });
 
-  describe('game management', function() {
+  describe('combat management', function() {
     var state;
     
     beforeEach(function() {
