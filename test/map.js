@@ -2,6 +2,7 @@
 
 var expect = require('chai').expect;
 var helper = require('./helper');
+var config = require('./data/config');
 
 var Map = require('../server/map');
 var Position = require('../server/position');
@@ -18,14 +19,21 @@ describe('Map', function() {
   var posB;
 
   beforeEach(function() {
-    map = new Map(emptyField);
+    map = new Map({}, {
+      labyrinth: emptyField,
+      wallConfig: config.wall
+    });
+
     posA = new Position(5, 0);
     posB = new Position(5, 10);
   });
 
   describe('Map creation', function() {
     it('should create empty map', function() {
-      var newMap = new Map(emptyField);
+      var newMap = new Map({}, {
+        labyrinth: emptyField,
+        wallConfig: config.wall
+      });
 
       expect(newMap.height).equal(11);
       expect(newMap.width).equal(11);
@@ -36,7 +44,10 @@ describe('Map', function() {
     });
 
     it('should prefill the map with initial walls', function() {
-      var newMap = new Map(field);
+      var newMap = new Map({}, {
+        labyrinth: field,
+        wallConfig: config.wall
+      });
 
       expect(newMap.height).equal(11);
       expect(newMap.width).equal(11);
@@ -239,8 +250,8 @@ describe('Map', function() {
       var wall2;
 
       beforeEach(function() {
-        wall1 = new Wall();
-        wall2 = new Wall();
+        wall1 = helper.createWall();
+        wall2 = helper.createWall();
       });
 
       it('should add only new walls', function() {
@@ -324,8 +335,8 @@ describe('Map', function() {
         bot2 = helper.createBot('Test bot 2');
         bullet1 = helper.createBullet();
         bullet2 = helper.createBullet();
-        wall1 = new Wall();
-        wall2 = new Wall();
+        wall1 = helper.createWall();
+        wall2 = helper.createWall();
       });
 
       it('should place items to different layers', function() {
@@ -382,7 +393,7 @@ describe('Map', function() {
 
   describe('Map.getField', function() {
     it('should ret correct field for current map state', function() {
-      var wall1 = new Wall();
+      var wall1 = helper.createWall();
       var field;
 
       map.add(wall1, posA);

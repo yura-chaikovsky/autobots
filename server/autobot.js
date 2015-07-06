@@ -1,45 +1,56 @@
 'use strict';
 
-var config = require('./config.json');
-
 var counter = 0;
 
-function Autobot(options) {
+function Autobot(config, options) {
   this.type= Autobot.TYPE;
   this.id = Autobot.TYPE + '#' + counter;
 
   ++counter;
 
+  this._config = config;
   this.playerId = options.playerId;
   this.name = options.name;
   this.direction = options.direction;
   this.position = null;
 
-  this.health = config.autobot.health;
+  this.health = config.health;
 
-  this.busyCount = 0;
-  this._actionsQueue = [];
+  this._actions = {
+    move: [doNothing],
+    rotate: [doNothing],
+    fire: [doNothing]
+  };
 }
+
+function doNothing() {}
 
 Autobot.TYPE = 'autobot';
 
 Autobot.prototype.addAction = function(action) {
-  this._actionsQueue.push(action);
+  Object.keys(action).forEach(function(type) {
+    var queue = this._actions[type];
+    var config = this._config.actions[type];
+
+    var resultStep = queue.length - 1 + config.result;
+    var step;
+
+    for (step = 0; step < config.duration; ++step) {
+      queue.push(doNothing);
+    }
+
+    queue[resultStep] = action[type];
+  }, this);
 };
 
 Autobot.prototype.act = function() {
-  var action = this._actionsQueue[0];
+  this._actions.fire.shift()();
+  this._actions.move.shift()();
+  this._actions.rotate.shift()();
 
-  --this.busyCount;
-
-  if (!action || this.busyCount > 0 ) {
-    return;
-  }
-
-  this._actionsQueue.shift();
-  this.busyCount = action.duration;
-
-  action.execute();
+  this._actions.fire[0] = this._actions.fire[0] || doNothing;
+  this._actions.move[0] = this._actions.move[0] || doNothing;
+  this._actions.rotate[0] = this._actions.rotate[0] || doNothing;
 };
 
 Autobot.prototype.hit = function() {
@@ -56,7 +67,11 @@ Autobot.prototype.getState = function() {
     direction: this.direction,
     health: this.health,
     position: this.position.normalize(),
-    busyCount: this.busyCount > 0 ? this.busyCount : 0
+    readyTo: {
+      move: this._actions.move.length < 2,
+      rotate: this._actions.rotate.length < 2,
+      fire: this._actions.fire.length < 2
+    }
   };
 };
 

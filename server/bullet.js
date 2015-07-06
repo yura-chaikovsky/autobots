@@ -2,39 +2,47 @@
 
 var counter = 0;
 
-function Bullet(options) {
+function Bullet(config, options) {
   this.type = Bullet.TYPE;
   this.id = Bullet.TYPE + '#' + counter;
 
   ++counter;
 
+  this._config = config;
   this.health = 1;
   this.direction = options.direction;
+  this.ownerId = options.ownerId;
   this.position = null;
 
-  this.busyCount = 0;
-  this._actionsQueue = [];
+  this._actions = {
+    move: [doNothing]
+  };
 }
+
+function doNothing() {}
 
 Bullet.TYPE = 'bullet';
 
 Bullet.prototype.addAction = function(action) {
-  this._actionsQueue.push(action);
+  Object.keys(action).forEach(function(type) {
+    var queue = this._actions[type];
+    var config = this._config.actions[type];
+
+    var resultStep = queue.length - 1 + config.result;
+    var step;
+
+    for (step = 0; step < config.duration; ++step) {
+      queue.push(doNothing);
+    }
+
+    queue[resultStep] = action[type];
+  }, this);
 };
 
 Bullet.prototype.act = function() {
-  var action = this._actionsQueue[0];
+  this._actions.move.shift()();
 
-  --this.busyCount;
-
-  if (!action || this.busyCount > 0 ) {
-    return;
-  }
-
-  this._actionsQueue.shift();
-  this.busyCount = action.duration;
-
-  action.execute();
+  this._actions.move[0] = this._actions.move[0] || doNothing;
 };
 
 Bullet.prototype.hit = function() {
@@ -46,8 +54,7 @@ Bullet.prototype.getState = function() {
     id: this.id,
     direction: this.direction,
     health: this.health,
-    position: this.position.normalize(),
-    busyCount: this.busyCount > 0 ? this.busyCount : 0
+    position: this.position.normalize()
   };
 };
 

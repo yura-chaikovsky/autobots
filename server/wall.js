@@ -1,14 +1,14 @@
 'use strict';
 
-var config = require('./config.json');
 var counter = 0;
 
-function Wall() {
+function Wall(config) {
   this.type = Wall.TYPE;
   this.id = Wall.TYPE + '#' + counter;
+
   ++counter;
 
-  this.health = config.wall.health;
+  this.health = config.health;
 }
 
 Wall.TYPE = 'wall';

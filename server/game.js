@@ -45,6 +45,10 @@ function Game(io, config) {
         return;
       }
 
+      combatOptions.game = _this;
+      combatOptions.globalConfig = config;
+      combatOptions.map = mapGenerator.generate(config);
+
       combatOptions.players = _this.getPlayers().filter(function(player) {
         return -1 !== data.playerIds.indexOf(player.id);
       });
@@ -53,10 +57,8 @@ function Game(io, config) {
         return console.log('There should be at least 2 players!');
       }
 
-      combatOptions.map = mapGenerator.generate(config.map);
-      combatOptions.config = config.game;
+      currentCombat = new Combat(config.combat, combatOptions);
 
-      currentCombat = new Combat(_this, combatOptions);
       currentCombat.start();
     });
 
@@ -65,7 +67,7 @@ function Game(io, config) {
         return console.log(id + ' tried to send a command');
       }
 
-      currentCombat.addAction(player, data.action, data.options);
+      currentCombat.addAction(player, data);
     });
 
     client.on('disconnect', function() {
